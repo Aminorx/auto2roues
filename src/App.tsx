@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { AppProvider, useApp } from './contexts/AppContext';
 import { Header } from './components/Header';
 import { Hero } from './components/Hero';
@@ -11,28 +11,12 @@ import { CreateListingForm } from './components/CreateListingForm';
 function AppContent() {
   const [currentView, setCurrentView] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const { currentUser, selectedVehicle, setSelectedVehicle } = useApp();
+  const { selectedVehicle, setSelectedVehicle } = useApp();
 
-  // If a vehicle is selected, show its details regardless of current view
-  if (selectedVehicle) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-        <Header 
-          currentView={currentView}
-          setCurrentView={setCurrentView}
-          mobileMenuOpen={mobileMenuOpen}
-          setMobileMenuOpen={setMobileMenuOpen}
-        />
-        
-        <VehicleDetail 
-          vehicle={selectedVehicle} 
-          onBack={() => setSelectedVehicle(null)} 
-        />
-        
-        <AuthModal />
-      </div>
-    );
-  }
+  const handleBack = useCallback(() => {
+    setSelectedVehicle(null);
+  }, [setSelectedVehicle]);
+
   const renderContent = () => {
     switch (currentView) {
       case 'listings':
@@ -72,14 +56,21 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-50">
-      <Header 
+      <Header
         currentView={currentView}
         setCurrentView={setCurrentView}
         mobileMenuOpen={mobileMenuOpen}
         setMobileMenuOpen={setMobileMenuOpen}
       />
       
-      {renderContent()}
+      {selectedVehicle ? (
+        <VehicleDetail
+          vehicle={selectedVehicle}
+          onBack={handleBack}
+        />
+      ) : (
+        renderContent()
+      )}
       
       <AuthModal />
     </div>

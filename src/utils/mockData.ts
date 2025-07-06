@@ -654,4 +654,5 @@ export const categories = [
   { value: 'utility', label: 'Utilitaires', icon: '🚚' },
   { value: 'other', label: 'Autres', icon: '🚤' },
   { value: 'parts', label: 'Pièces détachées', icon: '🔧' },
+  { value: 'services', label: 'Services', icon: '🛠️' },
 ];

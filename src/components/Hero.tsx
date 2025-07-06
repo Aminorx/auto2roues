@@ -43,33 +43,33 @@ export const Hero: React.FC<HeroProps> = ({ setCurrentView }) => {
   };
 
   const mainCategories = [
-    { 
-      id: 'car', 
-      name: 'Voitures', 
-      description: 'Berlines, SUV, citadines, sportives',
+    {
+      id: 'car',
+      name: 'Voitures - Utilitaires',
+      description: 'Berlines, SUV, citadines, sportives, Fourgons, camions, véhicules pro',
       image: '/src/assets/voiture.png',
-      color: 'from-[#0CBFDE] to-[#0AA5C7]' 
+      color: 'from-[#0CBFDE] to-[#0AA5C7]'
     },
-    { 
-      id: 'motorcycle', 
-      name: 'Motos, Scooters, Quads', 
-      description: 'Tous types de deux-roues',
+    {
+      id: 'motorcycle',
+      name: 'Motos, Scooters, Quads, Nautisme',
+      description: 'Tous types de motos, scooters, Quads, Jestkis, bateaux',
       image: '/src/assets/moto.png',
-      color: 'from-[#0CBFDE] to-[#0AA5C7]' 
+      color: 'from-[#0CBFDE] to-[#0AA5C7]'
     },
-    { 
-      id: 'utility', 
-      name: 'Utilitaires', 
-      description: 'Fourgons, camions, véhicules pro',
+    {
+      id: 'services',
+      name: 'Services',
+      description: 'Tous services et travaux de réparation ou de maintenance liée aux véhicules',
       image: '/src/assets/utilitaire.png',
-      color: 'from-[#0CBFDE] to-[#0AA5C7]' 
+      color: 'from-[#0CBFDE] to-[#0AA5C7]'
     },
-    { 
-      id: 'parts', 
-      name: 'Pièces détachées', 
-      description: 'Pièces auto, moto et accessoires',
+    {
+      id: 'parts',
+      name: 'Pièces détachées',
+      description: 'Pièces auto, moto et accessoires pour tout type de véhicules',
       image: '/src/assets/pieces.png',
-      color: 'from-[#0CBFDE] to-[#0AA5C7]' 
+      color: 'from-[#0CBFDE] to-[#0AA5C7]'
     },
   ];
 
@@ -77,23 +77,23 @@ export const Hero: React.FC<HeroProps> = ({ setCurrentView }) => {
   const categorySections = [
     {
       id: 'car',
-      title: 'Voitures d\'occasion',
-      vehicles: getVehiclesByCategory('car')
+      title: 'Voitures et Utilitaires d\'occasion',
+      vehicles: [...getVehiclesByCategory('car'), ...getVehiclesByCategory('utility')]
     },
     {
       id: 'motorcycle',
-      title: 'Motos, Scooters',
-      vehicles: [...getVehiclesByCategory('motorcycle'), ...getVehiclesByCategory('scooter')]
+      title: 'Motos, Scooters, Quads & Nautisme',
+      vehicles: [...getVehiclesByCategory('motorcycle'), ...getVehiclesByCategory('scooter'), ...getVehiclesByCategory('quad'), ...getVehiclesByCategory('other')]
     },
     {
-      id: 'utility',
-      title: 'Utilitaires',
-      vehicles: getVehiclesByCategory('utility')
+      id: 'services',
+      title: 'Services',
+      vehicles: getVehiclesByCategory('services')
     },
     {
-      id: 'other',
-      title: 'Autres véhicules',
-      vehicles: getVehiclesByCategory('other')
+      id: 'parts',
+      title: 'Pièces détachées',
+      vehicles: getVehiclesByCategory('parts')
     }
   ];
 

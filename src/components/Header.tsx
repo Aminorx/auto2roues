@@ -42,13 +42,10 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const categories = [
-    { id: 'vehicles', label: 'Véhicules' },
-    { id: 'motos', label: 'Motos' },
-    { id: 'scooters', label: 'Scooters' },
-    { id: 'quads', label: 'Quads' },
-    { id: 'utilitaires', label: 'Utilitaires' },
-    { id: 'pieces-voitures', label: 'Pièces détachées voitures' },
-    { id: 'pieces-motos', label: 'Pièces détachées motos' },
+    { id: 'car-utility', label: 'Voitures - Utilitaires' },
+    { id: 'moto-quad-marine', label: 'Motos, Scooters, Quads, Nautisme' },
+    { id: 'services', label: 'Services' },
+    { id: 'spare-parts', label: 'Pièces détachées' },
     { id: 'conseils', label: 'Conseils' },
   ];
 
@@ -172,7 +169,7 @@ export const Header: React.FC<HeaderProps> = ({
       {/* Categories Menu */}
       <div className="hidden lg:block border-t border-gray-100 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center space-x-8 py-3">
+          <div className="flex items-center justify-center space-x-8 py-3">
             {categories.map((category, index) => (
               <React.Fragment key={category.id}>
                 <button
