@@ -36,7 +36,7 @@ export const CreateListingForm: React.FC = () => {
     },
   });
 
-  const totalSteps = 12;
+  const totalSteps = 10;
 
   const updateFormData = (updates: Partial<ListingFormData>) => {
     setFormData(prev => ({ ...prev, ...updates }));
@@ -70,10 +70,7 @@ export const CreateListingForm: React.FC = () => {
 
   const shouldShowStep = (stepNumber: number): boolean => {
     switch (stepNumber) {
-      case 4: // Immatriculation
-        return formData.listingType === 'sell' && 
-               ['car', 'motorcycle', 'utility'].includes(formData.productType || '');
-      case 6: // État du bien
+      case 5: // État du bien (previously step 6)
         return formData.listingType === 'sell' && formData.productType !== 'parts';
       default:
         return true;
@@ -101,6 +98,11 @@ export const CreateListingForm: React.FC = () => {
     setCurrentStep(nextValidStep);
   };
 
+  const handleSelection = (updates: Partial<ListingFormData>) => {
+    updateFormData(updates);
+    handleNext();
+  };
+
   const handlePrev = () => {
     const prevValidStep = getPrevValidStep(currentStep);
     setCurrentStep(prevValidStep);
@@ -111,12 +113,18 @@ export const CreateListingForm: React.FC = () => {
       case 1: return formData.listingType !== null;
       case 2: return formData.productType !== null;
       case 3: return formData.title.trim().length > 0;
-      case 5: return formData.productDetails.brand && formData.productDetails.model;
-      case 6: return !shouldShowStep(6) || formData.condition !== undefined;
+      case 4:
+        const details = formData.productDetails;
+        const isCarOrUtility = ['car', 'utility'].includes(formData.productType || '');
+        
+        if (isCarOrUtility) {
+          return !!(details.brand && details.model && details.fuelType && details.transmission);
+        }
+        return !!(details.brand && details.model);
+      case 5: return !shouldShowStep(5) || formData.condition !== undefined;
       case 7: return formData.description.trim().length > 0;
-      case 9: return formData.price > 0;
-      case 10: return formData.location.city && formData.location.postalCode;
-      case 11: return formData.contact.phone.length > 0;
+      case 8: return formData.price > 0;
+      case 9: return !!(formData.location.city && formData.location.postalCode && formData.contact.phone.length > 0);
       default: return true;
     }
   };
@@ -131,29 +139,7 @@ export const CreateListingForm: React.FC = () => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-2xl mx-auto">
         <button
-          onClick={() => updateFormData({ listingType: 'buy' })}
-          className={`p-8 border-2 rounded-2xl transition-all duration-200 ${
-            formData.listingType === 'buy'
-              ? 'border-[#0CBFDE] bg-cyan-50 shadow-lg'
-              : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-          }`}
-        >
-          <div className="text-center">
-            <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-              <ShoppingCart className="h-8 w-8 text-white" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-900 mb-2">ACHAT</h3>
-            <p className="text-gray-600">Je recherche un véhicule ou une pièce</p>
-          </div>
-          {formData.listingType === 'buy' && (
-            <div className="mt-4 flex justify-center">
-              <Check className="h-6 w-6 text-[#0CBFDE]" />
-            </div>
-          )}
-        </button>
-
-        <button
-          onClick={() => updateFormData({ listingType: 'sell' })}
+          onClick={() => handleSelection({ listingType: 'sell' })}
           className={`p-8 border-2 rounded-2xl transition-all duration-200 ${
             formData.listingType === 'sell'
               ? 'border-[#0CBFDE] bg-cyan-50 shadow-lg'
@@ -173,6 +159,27 @@ export const CreateListingForm: React.FC = () => {
             </div>
           )}
         </button>
+        <button
+          onClick={() => handleSelection({ listingType: 'buy' })}
+          className={`p-8 border-2 rounded-2xl transition-all duration-200 ${
+            formData.listingType === 'buy'
+              ? 'border-[#0CBFDE] bg-cyan-50 shadow-lg'
+              : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+          }`}
+        >
+          <div className="text-center">
+            <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <ShoppingCart className="h-8 w-8 text-white" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900 mb-2">DEMANDE</h3>
+            <p className="text-gray-600">Je recherche un véhicule ou une pièce</p>
+          </div>
+          {formData.listingType === 'buy' && (
+            <div className="mt-4 flex justify-center">
+              <Check className="h-6 w-6 text-[#0CBFDE]" />
+            </div>
+          )}
+        </button>
       </div>
     </div>
   );
@@ -185,16 +192,16 @@ export const CreateListingForm: React.FC = () => {
         <p className="text-gray-600 text-lg">Quel type de produit ?</p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-4xl mx-auto">
         {[
-          { id: 'car', icon: Car, label: 'Voiture', image: voitureIcon },
-          { id: 'motorcycle', icon: Bike, label: 'Moto', image: motoIcon },
-          { id: 'utility', icon: Truck, label: 'Utilitaire', image: utilitaireIcon },
-          { id: 'parts', icon: Wrench, label: 'Pièce détachée', image: piecesIcon },
+          { id: 'car', label: 'Voitures - Utilitaires', image: voitureIcon },
+          { id: 'motorcycle', label: 'Motos, Scooters, Quads, Nautisme', image: motoIcon },
+          { id: 'service', label: 'Services', image: piecesIcon },
+          { id: 'parts', label: 'Pièces détachées', image: piecesIcon },
         ].map((product) => (
           <button
             key={product.id}
-            onClick={() => updateFormData({ productType: product.id as any })}
+            onClick={() => handleSelection({ productType: product.id as any })}
             className={`p-6 border-2 rounded-2xl transition-all duration-200 ${
               formData.productType === product.id
                 ? 'border-[#0CBFDE] bg-cyan-50 shadow-lg'
@@ -203,8 +210,8 @@ export const CreateListingForm: React.FC = () => {
           >
             <div className="text-center">
               <div className="w-16 h-16 mx-auto mb-3 flex items-center justify-center">
-                <img 
-                  src={product.image} 
+                <img
+                  src={product.image}
                   alt={product.label}
                   className="w-12 h-12 object-contain"
                 />
@@ -264,43 +271,34 @@ export const CreateListingForm: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
-  );
 
-  // Étape 4: Immatriculation (conditionnelle)
-  const renderStep4 = () => (
-    <div className="space-y-8 max-w-2xl mx-auto">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Numéro d'immatriculation</h2>
-        <p className="text-gray-600 text-lg">Optionnel - Nous aide à préremplir les données</p>
-      </div>
-
-      <div>
-        <label className="block text-sm font-semibold text-gray-700 mb-3">
-          Numéro d'immatriculation (facultatif)
-        </label>
-        <input
-          type="text"
-          value={formData.registrationNumber || ''}
-          onChange={(e) => updateFormData({ registrationNumber: e.target.value })}
-          className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0CBFDE] focus:border-[#0CBFDE] text-lg"
-          placeholder="AB-123-CD"
-          maxLength={20}
-        />
-      </div>
-
-      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-        <div className="flex items-start space-x-3">
-          <Info className="h-5 w-5 text-yellow-600 mt-0.5" />
-          <div>
-            <h4 className="font-semibold text-yellow-900">Information</h4>
-            <p className="text-yellow-800 text-sm">
-              Nous utiliserons ce champ pour préremplir automatiquement les données du véhicule 
-              (API future). Vous pouvez laisser vide et remplir manuellement.
-            </p>
+      {formData.listingType === 'sell' && ['car', 'motorcycle', 'utility'].includes(formData.productType || '') && (
+        <div className="space-y-4 pt-8 border-t border-gray-200">
+           <label className="block text-sm font-semibold text-gray-700 mb-3">
+            Numéro d'immatriculation (facultatif)
+          </label>
+          <input
+            type="text"
+            value={formData.registrationNumber || ''}
+            onChange={(e) => updateFormData({ registrationNumber: e.target.value })}
+            className="w-full px-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0CBFDE] focus:border-[#0CBFDE] text-lg"
+            placeholder="AB-123-CD"
+            maxLength={20}
+          />
+           <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+            <div className="flex items-start space-x-3">
+              <Info className="h-5 w-5 text-yellow-600 mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-yellow-900">Information</h4>
+                <p className="text-yellow-800 text-sm">
+                  Nous utiliserons ce champ pour préremplir automatiquement les données du véhicule.
+                  Vous pouvez laisser vide et remplir manuellement.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 
@@ -308,6 +306,13 @@ export const CreateListingForm: React.FC = () => {
   const renderStep5 = () => {
     const currentYear = new Date().getFullYear();
     const years = Array.from({ length: 50 }, (_, i) => currentYear - i);
+    const carBrands = [
+      'Abarth', 'Alfa Romeo', 'Alpine', 'Aston Martin', 'Audi', 'Bentley', 'BMW', 'Bugatti', 'Cadillac', 'Chevrolet',
+      'Citroën', 'Cupra', 'Dacia', 'DS', 'Ferrari', 'Fiat', 'Ford', 'Honda', 'Hyundai', 'Jaguar', 'Jeep', 'Kia',
+      'Lamborghini', 'Lancia', 'Land Rover', 'Lexus', 'Lotus', 'Maserati', 'Mazda', 'McLaren', 'Mercedes-Benz',
+      'Mini', 'Mitsubishi', 'Nissan', 'Opel', 'Peugeot', 'Polestar', 'Porsche', 'Renault', 'Rolls-Royce', 'Seat',
+      'Skoda', 'Smart', 'SsangYong', 'Subaru', 'Suzuki', 'Tesla', 'Toyota', 'Volkswagen', 'Volvo'
+    ];
 
     return (
       <div className="space-y-8 max-w-4xl mx-auto">
@@ -320,13 +325,16 @@ export const CreateListingForm: React.FC = () => {
           {/* Champs communs */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">Marque *</label>
-            <input
-              type="text"
+            <select
               value={formData.productDetails.brand}
               onChange={(e) => updateProductDetails({ brand: e.target.value })}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0CBFDE] focus:border-[#0CBFDE]"
-              placeholder="BMW, Peugeot, Yamaha..."
-            />
+            >
+              <option value="">Sélectionner une marque</option>
+              {carBrands.map(brand => (
+                <option key={brand} value={brand}>{brand}</option>
+              ))}
+            </select>
           </div>
 
           <div>
@@ -387,7 +395,7 @@ export const CreateListingForm: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Boîte de vitesses</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Boîte de vitesses *</label>
                 <select
                   value={formData.productDetails.transmission || ''}
                   onChange={(e) => updateProductDetails({ transmission: e.target.value as any })}
@@ -401,7 +409,7 @@ export const CreateListingForm: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">Carburant</label>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">Carburant *</label>
                 <select
                   value={formData.productDetails.fuelType || ''}
                   onChange={(e) => updateProductDetails({ fuelType: e.target.value as any })}
@@ -488,30 +496,19 @@ export const CreateListingForm: React.FC = () => {
                 <label className="block text-sm font-semibold text-gray-700 mb-4">Équipements</label>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {[
+                    'Toit ouvrant',
+                    'Toit panoramique',
                     'Climatisation',
                     'GPS',
-                    'Toit ouvrant',
                     'Sièges chauffants',
-                    'Régulateur de vitesse',
-                    'Bluetooth',
                     'Caméra de recul',
                     'Radar de recul',
                     'Jantes alliage',
-                    'Feux LED',
+                    'Feux LED Xénon',
                     'Vitres électriques',
-                    'Verrouillage centralisé',
-                    'ABS',
-                    'ESP',
                     'Airbags',
-                    'Ordinateur de bord',
-                    'Radio CD',
-                    'Prise USB',
-                    'Volant réglable',
                     'Sièges électriques',
-                    'Rétroviseurs électriques',
-                    'Phares antibrouillard',
                     'Attelage',
-                    'Barres de toit'
                   ].map((equipment) => (
                     <button
                       key={equipment}
@@ -880,66 +877,54 @@ export const CreateListingForm: React.FC = () => {
     </div>
   );
 
-  // Étape 10: Localisation
+  // Étape 9: Localisation et Coordonnées
   const renderStep10 = () => (
     <div className="space-y-8 max-w-2xl mx-auto">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Localisation</h2>
-        <p className="text-gray-600 text-lg">Où se trouve votre {formData.productType === 'parts' ? 'pièce' : 'véhicule'} ?</p>
+        <h2 className="text-3xl font-bold text-gray-900 mb-4">Localisation & Contact</h2>
+        <p className="text-gray-600 text-lg">Où se trouve le bien et comment vous contacter ?</p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Ville *</label>
-          <input
-            type="text"
-            value={formData.location.city}
-            onChange={(e) => updateFormData({ 
-              location: { ...formData.location, city: e.target.value }
-            })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0CBFDE] focus:border-[#0CBFDE]"
-            placeholder="Paris"
-          />
-        </div>
-
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Code postal *</label>
-          <input
-            type="text"
-            value={formData.location.postalCode}
-            onChange={(e) => updateFormData({ 
-              location: { ...formData.location, postalCode: e.target.value }
-            })}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0CBFDE] focus:border-[#0CBFDE]"
-            placeholder="75001"
-            maxLength="5"
-          />
-        </div>
-      </div>
-
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
-        <div className="flex items-start space-x-3">
-          <MapPin className="h-5 w-5 text-blue-600 mt-0.5" />
+      {/* Section Localisation */}
+      <div className="space-y-6">
+        <h3 className="text-xl font-semibold text-gray-800 border-b pb-2">Localisation</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <h4 className="font-semibold text-blue-900">Confidentialité</h4>
-            <p className="text-blue-800 text-sm">
-              Seule votre ville sera affichée publiquement. L'adresse exacte ne sera jamais communiquée.
-            </p>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Ville *</label>
+            <input
+              type="text"
+              value={formData.location.city}
+              onChange={(e) => updateFormData({ location: { ...formData.location, city: e.target.value } })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0CBFDE] focus:border-[#0CBFDE]"
+              placeholder="Paris"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">Code postal *</label>
+            <input
+              type="text"
+              value={formData.location.postalCode}
+              onChange={(e) => updateFormData({ location: { ...formData.location, postalCode: e.target.value } })}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0CBFDE] focus:border-[#0CBFDE]"
+              placeholder="75001"
+              maxLength={5}
+            />
+          </div>
+        </div>
+        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <div className="flex items-start space-x-3">
+            <MapPin className="h-5 w-5 text-blue-600 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-blue-900">Confidentialité</h4>
+              <p className="text-blue-800 text-sm">Seule votre ville sera affichée publiquement.</p>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  );
 
-  // Étape 11: Coordonnées
-  const renderStep11 = () => (
-    <div className="space-y-8 max-w-2xl mx-auto">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-gray-900 mb-4">Coordonnées</h2>
-        <p className="text-gray-600 text-lg">Comment les acheteurs peuvent-ils vous contacter ?</p>
-      </div>
-
-      <div className="space-y-6">
+      {/* Section Coordonnées */}
+      <div className="space-y-6 pt-6 border-t border-gray-200">
+        <h3 className="text-xl font-semibold text-gray-800 border-b pb-2">Coordonnées</h3>
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Téléphone *</label>
           <div className="relative">
@@ -947,53 +932,41 @@ export const CreateListingForm: React.FC = () => {
             <input
               type="tel"
               value={formData.contact.phone}
-              onChange={(e) => updateFormData({ 
-                contact: { ...formData.contact, phone: e.target.value }
-              })}
+              onChange={(e) => updateFormData({ contact: { ...formData.contact, phone: e.target.value } })}
               className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0CBFDE] focus:border-[#0CBFDE]"
               placeholder="+33 6 12 34 56 78"
             />
           </div>
         </div>
-
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">Email (optionnel)</label>
           <input
             type="email"
             value={formData.contact.email || ''}
-            onChange={(e) => updateFormData({ 
-              contact: { ...formData.contact, email: e.target.value }
-            })}
+            onChange={(e) => updateFormData({ contact: { ...formData.contact, email: e.target.value } })}
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#0CBFDE] focus:border-[#0CBFDE]"
             placeholder="votre@email.com"
           />
         </div>
-
         <div className="flex items-center space-x-3">
           <input
             type="checkbox"
             id="hidePhone"
             checked={formData.contact.hidePhone}
-            onChange={(e) => updateFormData({ 
-              contact: { ...formData.contact, hidePhone: e.target.checked }
-            })}
+            onChange={(e) => updateFormData({ contact: { ...formData.contact, hidePhone: e.target.checked } })}
             className="h-4 w-4 text-[#0CBFDE] focus:ring-[#0CBFDE] border-gray-300 rounded"
           />
           <label htmlFor="hidePhone" className="text-sm text-gray-700">
             Masquer le téléphone dans l'annonce (contact par message uniquement)
           </label>
         </div>
-      </div>
-
-      <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
-        <div className="flex items-start space-x-3">
-          <Info className="h-5 w-5 text-yellow-600 mt-0.5" />
-          <div>
-            <h4 className="font-semibold text-yellow-900">Protection des données</h4>
-            <p className="text-yellow-800 text-sm">
-              Vos coordonnées ne seront visibles que par les acheteurs intéressés. 
-              Nous ne les communiquons jamais à des tiers.
-            </p>
+        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4">
+          <div className="flex items-start space-x-3">
+            <Info className="h-5 w-5 text-yellow-600 mt-0.5" />
+            <div>
+              <h4 className="font-semibold text-yellow-900">Protection des données</h4>
+              <p className="text-yellow-800 text-sm">Vos coordonnées ne seront visibles que par les acheteurs intéressés.</p>
+            </div>
           </div>
         </div>
       </div>
@@ -1018,7 +991,7 @@ export const CreateListingForm: React.FC = () => {
                 <div className="flex justify-between">
                   <span className="text-gray-600">Type d'annonce:</span>
                   <span className="font-medium">
-                    {formData.listingType === 'buy' ? 'Recherche' : 'Vente'}
+                    {formData.listingType === 'buy' ? 'Demande' : 'Vente'}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -1204,15 +1177,13 @@ export const CreateListingForm: React.FC = () => {
       case 1: return renderStep1();
       case 2: return renderStep2();
       case 3: return renderStep3();
-      case 4: return renderStep4();
-      case 5: return renderStep5();
-      case 6: return renderStep6();
-      case 7: return renderStep7();
-      case 8: return renderStep8();
-      case 9: return renderStep9();
-      case 10: return renderStep10();
-      case 11: return renderStep11();
-      case 12: return renderStep12();
+      case 4: return renderStep5();
+      case 5: return renderStep6();
+      case 6: return renderStep7();
+      case 7: return renderStep8();
+      case 8: return renderStep9();
+      case 9: return renderStep10();
+      case 10: return renderStep12();
       default: return renderStep1();
     }
   };
@@ -1242,7 +1213,7 @@ export const CreateListingForm: React.FC = () => {
         </div>
 
         {/* Navigation */}
-        {currentStep < 12 && (
+        {currentStep < totalSteps && (
           <div className="flex justify-between items-center">
             <button
               onClick={handlePrev}
@@ -1253,14 +1224,16 @@ export const CreateListingForm: React.FC = () => {
               <span>Précédent</span>
             </button>
 
-            <button
-              onClick={handleNext}
-              disabled={!canProceed()}
-              className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-[#0CBFDE] to-[#0AA5C7] hover:from-[#0AA5C7] hover:to-[#0891B2] text-white rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span>Suivant</span>
-              <ArrowRight className="h-5 w-5" />
-            </button>
+            {currentStep > 2 && (
+              <button
+                onClick={handleNext}
+                disabled={!canProceed()}
+                className="flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-[#0CBFDE] to-[#0AA5C7] hover:from-[#0AA5C7] hover:to-[#0891B2] text-white rounded-xl font-semibold transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <span>Suivant</span>
+                <ArrowRight className="h-5 w-5" />
+              </button>
+            )}
           </div>
         )}
       </div>

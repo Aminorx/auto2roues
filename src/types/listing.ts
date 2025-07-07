@@ -3,7 +3,7 @@ export interface ListingFormData {
   listingType: 'buy' | 'sell' | null;
   
   // Étape 2: Type de produit
-  productType: 'car' | 'motorcycle' | 'utility' | 'parts' | null;
+  productType: 'car' | 'motorcycle' | 'scooter' | 'quad' | 'utility' | 'service' | 'parts' | null;
   
   // Étape 3: Titre
   title: string;
