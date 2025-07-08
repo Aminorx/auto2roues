@@ -129,14 +129,10 @@ const VEHICLE_EQUIPMENT = {
     'GPS',
     'Caméra de recul',
     'Radar de recul',
-    'Attelage',
-    'Cloison de séparation',
-    'Hayon arrière',
-    'Porte latérale',
-    'Plancher bois',
-    'Éclairage LED cargo',
-    'Prise 12V',
-    'Radio Bluetooth'
+    'Vitres électriques',
+    'Airbags',
+    'Feux LED / Xénon',
+    'Attelage'
   ]
 };
 
@@ -264,6 +260,15 @@ export const CreateListingForm: React.FC = () => {
         // Validation spécifique pour les voitures
         if (formData.subcategory === 'car') {
           return formData.specificDetails.brand && 
+                 formData.specificDetails.model && 
+                 formData.specificDetails.year && 
+                 formData.specificDetails.mileage && 
+                 formData.specificDetails.fuelType;
+        }
+        // Validation spécifique pour les utilitaires
+        if (formData.subcategory === 'utility') {
+          return formData.specificDetails.utilityType &&
+                 formData.specificDetails.brand && 
                  formData.specificDetails.model && 
                  formData.specificDetails.year && 
                  formData.specificDetails.mileage && 
@@ -563,6 +568,255 @@ export const CreateListingForm: React.FC = () => {
       );
     }
 
+    // Champs spécifiques pour les utilitaires
+    if (subcategory.id === 'utility') {
+      const selectedEquipment = formData.specificDetails.equipment || [];
+      
+      return (
+        <div className="space-y-6">
+          {/* Type de véhicule utilitaire */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Type de véhicule utilitaire *
+            </label>
+            <select
+              value={formData.specificDetails.utilityType || ''}
+              onChange={(e) => updateSpecificDetails('utilityType', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+            >
+              <option value="">Sélectionnez un type</option>
+              <option value="camionnette">Camionnette</option>
+              <option value="fourgon">Fourgon</option>
+              <option value="fourgonnette">Fourgonnette</option>
+              <option value="pickup">Pick-up</option>
+              <option value="plateau">Plateau</option>
+              <option value="camion_benne">Camion benne</option>
+              <option value="vehicule_frigorifique">Véhicule frigorifique</option>
+              <option value="vehicule_atelier">Véhicule atelier</option>
+              <option value="autre_utilitaire">Autre utilitaire</option>
+            </select>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Marque *
+              </label>
+              <select
+                value={formData.specificDetails.brand || ''}
+                onChange={(e) => updateSpecificDetails('brand', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez une marque</option>
+                {brands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Modèle *
+              </label>
+              <input
+                type="text"
+                value={formData.specificDetails.model || ''}
+                onChange={(e) => updateSpecificDetails('model', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="Ex: Transit Custom"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Année de mise en circulation *
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.year || ''}
+                onChange={(e) => updateSpecificDetails('year', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="2020"
+                min="1990"
+                max={new Date().getFullYear() + 1}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Kilométrage *
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.mileage || ''}
+                onChange={(e) => updateSpecificDetails('mileage', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="50000"
+                min="0"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Boîte de vitesses
+              </label>
+              <select
+                value={formData.specificDetails.transmission || ''}
+                onChange={(e) => updateSpecificDetails('transmission', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez</option>
+                <option value="manual">Manuelle</option>
+                <option value="automatic">Automatique</option>
+                <option value="semi-automatic">Semi-automatique</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Carburant *
+              </label>
+              <select
+                value={formData.specificDetails.fuelType || ''}
+                onChange={(e) => updateSpecificDetails('fuelType', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez un carburant</option>
+                {fuelTypes.map((fuel) => (
+                  <option key={fuel.value} value={fuel.value}>
+                    {fuel.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Puissance (CV)
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.power || ''}
+                onChange={(e) => updateSpecificDetails('power', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="120"
+                min="0"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Nombre de places
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.seats || ''}
+                onChange={(e) => updateSpecificDetails('seats', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="3"
+                min="1"
+                max="9"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Nombre de portes
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.doors || ''}
+                onChange={(e) => updateSpecificDetails('doors', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="3"
+                min="2"
+                max="5"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Couleur
+              </label>
+              <input
+                type="text"
+                value={formData.specificDetails.color || ''}
+                onChange={(e) => updateSpecificDetails('color', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="Ex: Blanc"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                PTAC (Poids Total Autorisé en Charge)
+              </label>
+              <input
+                type="text"
+                value={formData.specificDetails.ptac || ''}
+                onChange={(e) => updateSpecificDetails('ptac', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="Ex: 3500 kg"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Volume utile (en m³) - Optionnel
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={formData.specificDetails.volume || ''}
+              onChange={(e) => updateSpecificDetails('volume', parseFloat(e.target.value) || '')}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              placeholder="Ex: 12.5"
+              min="0"
+            />
+          </div>
+
+          {/* Équipements spécifiques aux utilitaires */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-4">
+              Équipements (optionnel)
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {VEHICLE_EQUIPMENT.utility.map((equipment) => (
+                <label
+                  key={equipment}
+                  className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedEquipment.includes(equipment)}
+                    onChange={() => toggleEquipment(equipment)}
+                    className="h-4 w-4 text-primary-bolt-500 focus:ring-primary-bolt-500 border-gray-300 rounded"
+                  />
+                  <span className="text-sm text-gray-700">{equipment}</span>
+                </label>
+              ))}
+            </div>
+            {selectedEquipment.length > 0 && (
+              <p className="text-sm text-gray-500 mt-2">
+                {selectedEquipment.length} équipement{selectedEquipment.length > 1 ? 's' : ''} sélectionné{selectedEquipment.length > 1 ? 's' : ''}
+              </p>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     // Équipements pour motos
     if (subcategory.id === 'motorcycle') {
       const selectedEquipment = formData.specificDetails.equipment || [];
@@ -815,6 +1069,88 @@ export const CreateListingForm: React.FC = () => {
                       {EMISSION_CLASSES.find(e => e.value === formData.specificDetails.emissionClass)?.label || 'Non renseigné'}
                     </p>
                   </div>
+                </div>
+                {formData.specificDetails.equipment && formData.specificDetails.equipment.length > 0 && (
+                  <div>
+                    <span className="text-sm text-gray-600 block mb-2">Équipements:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.specificDetails.equipment.map((equipment: string, index: number) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-primary-bolt-100 text-primary-bolt-500 text-xs rounded-full"
+                        >
+                          {equipment}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : formData.subcategory === 'utility' ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div>
+                    <span className="text-sm text-gray-600">Type:</span>
+                    <p className="font-medium">
+                      {formData.specificDetails.utilityType ? 
+                        formData.specificDetails.utilityType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase()) : 
+                        'Non renseigné'
+                      }
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Marque:</span>
+                    <p className="font-medium">{formData.specificDetails.brand || 'Non renseigné'}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Modèle:</span>
+                    <p className="font-medium">{formData.specificDetails.model || 'Non renseigné'}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Année:</span>
+                    <p className="font-medium">{formData.specificDetails.year || 'Non renseigné'}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Kilométrage:</span>
+                    <p className="font-medium">
+                      {formData.specificDetails.mileage ? `${formData.specificDetails.mileage.toLocaleString('fr-FR')} km` : 'Non renseigné'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Carburant:</span>
+                    <p className="font-medium">
+                      {fuelTypes.find(f => f.value === formData.specificDetails.fuelType)?.label || 'Non renseigné'}
+                    </p>
+                  </div>
+                  {formData.specificDetails.transmission && (
+                    <div>
+                      <span className="text-sm text-gray-600">Boîte:</span>
+                      <p className="font-medium">
+                        {formData.specificDetails.transmission === 'manual' ? 'Manuelle' :
+                         formData.specificDetails.transmission === 'automatic' ? 'Automatique' :
+                         formData.specificDetails.transmission === 'semi-automatic' ? 'Semi-automatique' : 
+                         formData.specificDetails.transmission}
+                      </p>
+                    </div>
+                  )}
+                  {formData.specificDetails.power && (
+                    <div>
+                      <span className="text-sm text-gray-600">Puissance:</span>
+                      <p className="font-medium">{formData.specificDetails.power} CV</p>
+                    </div>
+                  )}
+                  {formData.specificDetails.ptac && (
+                    <div>
+                      <span className="text-sm text-gray-600">PTAC:</span>
+                      <p className="font-medium">{formData.specificDetails.ptac}</p>
+                    </div>
+                  )}
+                  {formData.specificDetails.volume && (
+                    <div>
+                      <span className="text-sm text-gray-600">Volume utile:</span>
+                      <p className="font-medium">{formData.specificDetails.volume} m³</p>
+                    </div>
+                  )}
                 </div>
                 {formData.specificDetails.equipment && formData.specificDetails.equipment.length > 0 && (
                   <div>
