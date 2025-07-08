@@ -827,6 +827,140 @@ export const colors = [
   '#6b7280', // gray
 ];
 
+// Nombre de portes pour les véhicules
+export const doorCounts = [
+  { value: 2, label: '2 portes' },
+  { value: 3, label: '3 portes' },
+  { value: 4, label: '4 portes' },
+  { value: 5, label: '5 portes' },
+];
+
+// Types de véhicules
+export const vehicleTypes = [
+  { value: 'citadine', label: 'Citadine' },
+  { value: 'berline', label: 'Berline' },
+  { value: 'suv', label: 'SUV' },
+  { value: 'break', label: 'Break' },
+  { value: 'coupe', label: 'Coupé' },
+  { value: 'cabriolet', label: 'Cabriolet' },
+  { value: 'monospace', label: 'Monospace' },
+  { value: 'pickup', label: 'Pick-up' },
+];
+
+// Types de transmission
+export const transmissionTypes = [
+  { value: 'manual', label: 'Manuelle' },
+  { value: 'automatic', label: 'Automatique' },
+  { value: 'semi-automatic', label: 'Semi-automatique' },
+];
+
+// Couleurs de véhicules
+export const vehicleColors = [
+  { value: 'blanc', label: 'Blanc' },
+  { value: 'noir', label: 'Noir' },
+  { value: 'gris', label: 'Gris' },
+  { value: 'argent', label: 'Argent' },
+  { value: 'rouge', label: 'Rouge' },
+  { value: 'bleu', label: 'Bleu' },
+  { value: 'vert', label: 'Vert' },
+  { value: 'jaune', label: 'Jaune' },
+  { value: 'orange', label: 'Orange' },
+  { value: 'violet', label: 'Violet' },
+  { value: 'marron', label: 'Marron' },
+  { value: 'beige', label: 'Beige' },
+];
+
+// Types de sellerie
+export const upholsteryTypes = [
+  { value: 'tissu', label: 'Tissu' },
+  { value: 'cuir_partiel', label: 'Cuir partiel' },
+  { value: 'cuir', label: 'Cuir' },
+  { value: 'velours', label: 'Velours' },
+  { value: 'alcantara', label: 'Alcantara' },
+];
+
+// Classes d'émission
+export const emissionClasses = [
+  { value: 'euro1', label: 'Euro 1' },
+  { value: 'euro2', label: 'Euro 2' },
+  { value: 'euro3', label: 'Euro 3' },
+  { value: 'euro4', label: 'Euro 4' },
+  { value: 'euro5', label: 'Euro 5' },
+  { value: 'euro6', label: 'Euro 6' },
+];
+
+// Types d'utilitaires
+export const utilityTypes = [
+  { value: 'van', label: 'Fourgon' },
+  { value: 'truck', label: 'Camion' },
+  { value: 'pickup', label: 'Pick-up' },
+  { value: 'trailer', label: 'Remorque' },
+];
+
+// Types de caravanes
+export const caravanTypes = [
+  { value: 'travel_trailer', label: 'Caravane de voyage' },
+  { value: 'motorhome', label: 'Camping-car' },
+  { value: 'popup', label: 'Caravane pliante' },
+  { value: 'fifth_wheel', label: 'Caravane à sellette' },
+];
+
+// Types de remorques
+export const trailerTypes = [
+  { value: 'utility', label: 'Utilitaire' },
+  { value: 'boat', label: 'Porte-bateau' },
+  { value: 'car', label: 'Porte-voiture' },
+  { value: 'cargo', label: 'Cargo fermée' },
+];
+
+// Types de motos
+export const motorcycleTypes = [
+  { value: 'sport', label: 'Sportive' },
+  { value: 'touring', label: 'Routière' },
+  { value: 'urban', label: 'Urbaine' },
+  { value: 'trail', label: 'Trail' },
+  { value: 'custom', label: 'Custom' },
+  { value: 'roadster', label: 'Roadster' },
+  { value: 'enduro', label: 'Enduro' },
+  { value: 'cross', label: 'Cross' },
+];
+
+// Types de quads
+export const quadTypes = [
+  { value: 'sport', label: 'Sport' },
+  { value: 'utility', label: 'Utilitaire' },
+  { value: 'touring', label: 'Tourisme' },
+  { value: 'youth', label: 'Jeune' },
+];
+
+// Types de jetskis
+export const jetskiTypes = [
+  { value: 'recreation', label: 'Loisir' },
+  { value: 'performance', label: 'Performance' },
+  { value: 'luxury', label: 'Luxe' },
+  { value: 'touring', label: 'Tourisme' },
+];
+
+// Types de bateaux
+export const boatTypes = [
+  { value: 'motor', label: 'Bateau à moteur' },
+  { value: 'sailing', label: 'Voilier' },
+  { value: 'fishing', label: 'Bateau de pêche' },
+  { value: 'inflatable', label: 'Pneumatique' },
+  { value: 'cabin', label: 'Cabine' },
+];
+
+// Types de services
+export const serviceTypes = [
+  { value: 'repair', label: 'Réparation' },
+  { value: 'maintenance', label: 'Entretien' },
+  { value: 'towing', label: 'Remorquage' },
+  { value: 'inspection', label: 'Contrôle technique' },
+  { value: 'bodywork', label: 'Carrosserie' },
+  { value: 'painting', label: 'Peinture' },
+  { value: 'tuning', label: 'Préparation' },
+];
+
 export const categories = [
   { value: 'car', label: 'Voitures', icon: '🚗' },
   { value: 'motorcycle', label: 'Motos', icon: '🏍️' },
