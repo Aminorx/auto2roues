@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, ArrowRight, Upload, X, Check, Car, Bike, Wrench, Package } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Upload, X, Check, Car, Bike, Wrench, Package, Camera } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
+import { brands, fuelTypes } from '../utils/mockData';
 
 interface FormData {
   // Étape 1: Catégorie principale
@@ -103,7 +104,7 @@ export const CreateListingForm: React.FC = () => {
     contact: { phone: '', email: '', hidePhone: false }
   });
 
-  const totalSteps = 9;
+  const totalSteps = 10; // Ajout d'une étape de récapitulatif
 
   // Réinitialiser la sous-catégorie quand la catégorie change
   useEffect(() => {
@@ -114,6 +115,13 @@ export const CreateListingForm: React.FC = () => {
 
   const updateFormData = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const updateSpecificDetails = (field: string, value: any) => {
+    setFormData(prev => ({
+      ...prev,
+      specificDetails: { ...prev.specificDetails, [field]: value }
+    }));
   };
 
   const nextStep = () => {
@@ -137,7 +145,15 @@ export const CreateListingForm: React.FC = () => {
       case 3:
         return formData.title.trim() !== '';
       case 4:
-        return true; // Pour l'instant, on permet de passer même sans détails spécifiques
+        // Validation spécifique pour les voitures
+        if (formData.subcategory === 'car') {
+          return formData.specificDetails.brand && 
+                 formData.specificDetails.model && 
+                 formData.specificDetails.year && 
+                 formData.specificDetails.mileage && 
+                 formData.specificDetails.fuelType;
+        }
+        return true; // Pour les autres sous-catégories, on permet de passer
       case 5:
         return formData.description.trim() !== '';
       case 6:
@@ -148,6 +164,8 @@ export const CreateListingForm: React.FC = () => {
         return formData.location.city !== '' && formData.location.postalCode !== '';
       case 9:
         return formData.contact.phone !== '';
+      case 10:
+        return true; // Étape de récapitulatif
       default:
         return false;
     }
@@ -162,15 +180,130 @@ export const CreateListingForm: React.FC = () => {
     return category?.subcategories.find(sub => sub.id === formData.subcategory);
   };
 
+  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    setFormData(prev => ({
+      ...prev,
+      photos: [...prev.photos, ...files]
+    }));
+  };
+
+  const removePhoto = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      photos: prev.photos.filter((_, i) => i !== index)
+    }));
+  };
+
   const renderSpecificDetailsFields = () => {
     const subcategory = getSelectedSubcategory();
     if (!subcategory) return null;
 
-    // Pour l'instant, on affiche un champ générique selon la sous-catégorie
-    // Plus tard, on pourra implémenter des champs spécifiques pour chaque type
+    // Champs spécifiques pour les voitures
+    if (subcategory.id === 'car') {
+      return (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Marque *
+              </label>
+              <select
+                value={formData.specificDetails.brand || ''}
+                onChange={(e) => updateSpecificDetails('brand', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez une marque</option>
+                {brands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Modèle *
+              </label>
+              <input
+                type="text"
+                value={formData.specificDetails.model || ''}
+                onChange={(e) => updateSpecificDetails('model', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="Ex: 320d"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Année *
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.year || ''}
+                onChange={(e) => updateSpecificDetails('year', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="2020"
+                min="1990"
+                max={new Date().getFullYear() + 1}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Kilométrage *
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.mileage || ''}
+                onChange={(e) => updateSpecificDetails('mileage', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="50000"
+                min="0"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Carburant *
+            </label>
+            <select
+              value={formData.specificDetails.fuelType || ''}
+              onChange={(e) => updateSpecificDetails('fuelType', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+            >
+              <option value="">Sélectionnez un carburant</option>
+              {fuelTypes.map((fuel) => (
+                <option key={fuel.value} value={fuel.value}>
+                  {fuel.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Équipements (optionnel)
+            </label>
+            <textarea
+              value={formData.specificDetails.equipment || ''}
+              onChange={(e) => updateSpecificDetails('equipment', e.target.value)}
+              rows={3}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              placeholder="GPS, climatisation, jantes alliage, régulateur de vitesse..."
+            />
+          </div>
+        </div>
+      );
+    }
+
+    // Champ générique pour les autres sous-catégories
     const placeholderText = {
       // Voitures - Utilitaires
-      'car': 'Marque, modèle, année, kilométrage, carburant, etc.',
       'utility': 'Marque, modèle, année, kilométrage, type d\'utilitaire, etc.',
       'caravan': 'Marque, modèle, année, nombre de places, équipements, etc.',
       'trailer': 'Type de remorque, charge utile, dimensions, etc.',
@@ -201,7 +334,7 @@ export const CreateListingForm: React.FC = () => {
           </label>
           <textarea
             value={formData.specificDetails.details || ''}
-            onChange={(e) => updateFormData('specificDetails', { ...formData.specificDetails, details: e.target.value })}
+            onChange={(e) => updateSpecificDetails('details', e.target.value)}
             rows={6}
             className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
             placeholder={placeholderText[subcategory.id] || 'Détails spécifiques...'}
@@ -209,6 +342,146 @@ export const CreateListingForm: React.FC = () => {
           <p className="text-sm text-gray-500 mt-2">
             Renseignez les informations techniques et caractéristiques importantes pour votre {subcategory.name.toLowerCase()}.
           </p>
+        </div>
+      </div>
+    );
+  };
+
+  const renderRecapStep = () => {
+    const selectedCategory = getSelectedCategory();
+    const selectedSubcategory = getSelectedSubcategory();
+
+    return (
+      <div className="space-y-8">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Récapitulatif de votre annonce
+          </h2>
+          <p className="text-gray-600">
+            Vérifiez les informations avant de publier votre annonce
+          </p>
+        </div>
+
+        <div className="space-y-6">
+          {/* Catégorie et sous-catégorie */}
+          <div className="bg-gray-50 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Catégorie</h3>
+            <div className="flex items-center space-x-3">
+              <span className="px-3 py-1 bg-primary-bolt-100 text-primary-bolt-500 rounded-full text-sm font-medium">
+                {selectedCategory?.name}
+              </span>
+              <span className="text-gray-400">→</span>
+              <span className="px-3 py-1 bg-primary-bolt-100 text-primary-bolt-500 rounded-full text-sm font-medium">
+                {selectedSubcategory?.name}
+              </span>
+            </div>
+          </div>
+
+          {/* Titre et prix */}
+          <div className="bg-gray-50 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Titre et prix</h3>
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <h4 className="text-xl font-bold text-gray-900">{formData.title}</h4>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-bold text-primary-bolt-500">
+                  {formData.price.toLocaleString('fr-FR')} €
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Détails spécifiques */}
+          <div className="bg-gray-50 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Détails spécifiques</h3>
+            {formData.subcategory === 'car' ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div>
+                  <span className="text-sm text-gray-600">Marque:</span>
+                  <p className="font-medium">{formData.specificDetails.brand || 'Non renseigné'}</p>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Modèle:</span>
+                  <p className="font-medium">{formData.specificDetails.model || 'Non renseigné'}</p>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Année:</span>
+                  <p className="font-medium">{formData.specificDetails.year || 'Non renseigné'}</p>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Kilométrage:</span>
+                  <p className="font-medium">
+                    {formData.specificDetails.mileage ? `${formData.specificDetails.mileage.toLocaleString('fr-FR')} km` : 'Non renseigné'}
+                  </p>
+                </div>
+                <div>
+                  <span className="text-sm text-gray-600">Carburant:</span>
+                  <p className="font-medium">
+                    {fuelTypes.find(f => f.value === formData.specificDetails.fuelType)?.label || 'Non renseigné'}
+                  </p>
+                </div>
+                {formData.specificDetails.equipment && (
+                  <div className="md:col-span-3">
+                    <span className="text-sm text-gray-600">Équipements:</span>
+                    <p className="font-medium">{formData.specificDetails.equipment}</p>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-gray-700">{formData.specificDetails.details || 'Aucun détail spécifique renseigné'}</p>
+            )}
+          </div>
+
+          {/* Description */}
+          <div className="bg-gray-50 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Description</h3>
+            <p className="text-gray-700 whitespace-pre-line">{formData.description}</p>
+          </div>
+
+          {/* Photos */}
+          <div className="bg-gray-50 rounded-xl p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Photos ({formData.photos.length})</h3>
+            {formData.photos.length > 0 ? (
+              <div className="grid grid-cols-3 md:grid-cols-4 gap-4">
+                {formData.photos.map((photo, index) => (
+                  <div key={index} className="aspect-square">
+                    <img
+                      src={URL.createObjectURL(photo)}
+                      alt={`Photo ${index + 1}`}
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-gray-500">Aucune photo ajoutée</p>
+            )}
+          </div>
+
+          {/* Localisation et contact */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Localisation</h3>
+              <p className="text-gray-700">
+                {formData.location.city} {formData.location.postalCode}
+              </p>
+            </div>
+
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact</h3>
+              <div className="space-y-2">
+                <p className="text-gray-700">
+                  <span className="font-medium">Téléphone:</span> {formData.contact.hidePhone ? 'Masqué' : formData.contact.phone}
+                </p>
+                {formData.contact.email && (
+                  <p className="text-gray-700">
+                    <span className="font-medium">Email:</span> {formData.contact.email}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -406,41 +679,57 @@ export const CreateListingForm: React.FC = () => {
               </p>
             </div>
 
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-bolt-500 transition-colors">
-              <Upload className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                Glissez vos photos ici
-              </h3>
-              <p className="text-gray-600 mb-4">
-                ou cliquez pour sélectionner des fichiers
-              </p>
-              <button className="bg-primary-bolt-500 text-white px-6 py-2 rounded-lg hover:bg-primary-bolt-600 transition-colors">
-                Choisir des photos
-              </button>
-            </div>
-
-            {formData.photos.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {formData.photos.map((photo, index) => (
-                  <div key={index} className="relative">
-                    <img
-                      src={URL.createObjectURL(photo)}
-                      alt={`Photo ${index + 1}`}
-                      className="w-full h-32 object-cover rounded-lg"
-                    />
-                    <button
-                      onClick={() => {
-                        const newPhotos = formData.photos.filter((_, i) => i !== index);
-                        updateFormData('photos', newPhotos);
-                      }}
-                      className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
+            <div className="space-y-6">
+              {/* Zone de upload */}
+              <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-bolt-500 transition-colors">
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={handlePhotoUpload}
+                  className="hidden"
+                  id="photo-upload"
+                />
+                <label htmlFor="photo-upload" className="cursor-pointer">
+                  <Camera className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    Glissez vos photos ici
+                  </h3>
+                  <p className="text-gray-600 mb-4">
+                    ou cliquez pour sélectionner des fichiers
+                  </p>
+                  <div className="bg-primary-bolt-500 text-white px-6 py-2 rounded-lg hover:bg-primary-bolt-600 transition-colors inline-block">
+                    Choisir des photos
                   </div>
-                ))}
+                </label>
               </div>
-            )}
+
+              {/* Aperçu des photos */}
+              {formData.photos.length > 0 && (
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                    Photos sélectionnées ({formData.photos.length})
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {formData.photos.map((photo, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={URL.createObjectURL(photo)}
+                          alt={`Photo ${index + 1}`}
+                          className="w-full h-32 object-cover rounded-lg"
+                        />
+                        <button
+                          onClick={() => removePhoto(index)}
+                          className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                        >
+                          <X className="h-4 w-4" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         );
 
@@ -578,6 +867,9 @@ export const CreateListingForm: React.FC = () => {
           </div>
         );
 
+      case 10:
+        return renderRecapStep();
+
       default:
         return null;
     }
@@ -655,16 +947,6 @@ export const CreateListingForm: React.FC = () => {
             </button>
           )}
         </div>
-
-        {/* Debug Info (à supprimer en production) */}
-        {process.env.NODE_ENV === 'development' && (
-          <div className="mt-8 p-4 bg-gray-100 rounded-lg">
-            <h3 className="font-semibold mb-2">Debug - Données du formulaire :</h3>
-            <pre className="text-xs overflow-auto">
-              {JSON.stringify(formData, null, 2)}
-            </pre>
-          </div>
-        )}
       </div>
     </div>
   );
