@@ -2,6 +2,15 @@ import { User, Vehicle, PremiumOption } from '../types';
 
 export const mockUsers: User[] = [
   {
+    id: 'demo',
+    email: 'demo@demo.com',
+    name: 'Utilisateur Démo',
+    phone: '+33 6 00 00 00 00',
+    type: 'individual',
+    verified: true,
+    createdAt: new Date('2024-01-01'),
+  },
+  {
     id: '1',
     email: 'john.doe@email.com',
     name: 'John Doe',

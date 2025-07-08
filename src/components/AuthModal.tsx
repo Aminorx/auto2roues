@@ -91,7 +91,7 @@ export const AuthModal: React.FC = () => {
       if (authMode === 'login') {
         // Simulate login - in real app, this would call an API
         const user = mockUsers.find(u => u.email === formData.email);
-        if (user) {
+        if (user && (formData.email === 'demo@demo.com' ? formData.password === 'demo123' : true)) {
           setCurrentUser(user);
           setShowAuthModal(false);
           resetForm();
