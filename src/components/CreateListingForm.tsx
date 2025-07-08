@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Upload, X, Check, Car, Bike, Wrench, Package, Camera } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
-import { brands, fuelTypes } from '../utils/mockData';
+import { getBrandsBySubcategory, fuelTypes } from '../utils/mockData';
 
 interface FormData {
   // Étape 1: Catégorie principale
@@ -258,10 +258,26 @@ export const CreateListingForm: React.FC = () => {
   // Réinitialiser la sous-catégorie quand la catégorie change
   useEffect(() => {
     if (formData.category) {
-      setFormData(prev => ({ ...prev, subcategory: '', specificDetails: {} }));
+      setFormData(prev => ({ 
+        ...prev, 
+        subcategory: '', 
+        specificDetails: {} 
+      }));
     }
   }, [formData.category]);
 
+  // Réinitialiser la marque quand la sous-catégorie change
+  useEffect(() => {
+    if (formData.subcategory) {
+      setFormData(prev => ({ 
+        ...prev, 
+        specificDetails: { 
+          ...prev.specificDetails, 
+          brand: '' // Réinitialiser la marque
+        } 
+      }));
+    }
+  }, [formData.subcategory]);
   // Avancement automatique des étapes
   useEffect(() => {
     if (currentStep === 1 && formData.category) {

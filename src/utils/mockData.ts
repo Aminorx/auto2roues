@@ -638,10 +638,107 @@ export const premiumOptions: PremiumOption[] = [
 ];
 
 export const brands = [
-  'Audi', 'BMW', 'Citroën', 'Ford', 'Honda', 'Hyundai', 'Kawasaki', 'Mercedes-Benz', 
-  'Nissan', 'Peugeot', 'Renault', 'Suzuki', 'Toyota', 'Volkswagen', 'Yamaha'
+  // Cette liste est maintenant remplacée par des listes spécifiques par type de véhicule
 ];
 
+// Marques par type de véhicule
+export const brandsByVehicleType = {
+  // Voitures
+  car: [
+    'Abarth', 'AC', 'Alfa Romeo', 'Alpina', 'Alpine', 'Aston Martin', 'Audi', 'Austin', 'Austin-Healey',
+    'Baic', 'Bentley', 'BMW', 'Borgward', 'Buick', 'BYD', 'Cadillac', 'Chevrolet', 'Chrysler', 'Citroën',
+    'Cupra', 'Dacia', 'DFSK', 'Dodge', 'Donkervoort', 'DS Automobiles', 'Ferrari', 'Fiat', 'Ford',
+    'Forthing', 'Foton', 'GMC', 'Glas', 'Honda', 'Hummer', 'Hyundai', 'Ineos', 'Infiniti', 'Isuzu',
+    'JAC', 'Jaecoo', 'Jaguar', 'Jeep', 'Kia', 'KTM', 'Lada', 'Lamborghini', 'Lancia', 'Land Rover',
+    'Lexus', 'Ligier', 'Livan', 'London Taxi', 'Lotus', 'MAN', 'Maserati', 'Maxus', 'Maybach', 'Mazda',
+    'McLaren', 'Mercedes-Benz', 'MG', 'Mini', 'Mitsubishi', 'Morgan', 'Nissan', 'Oldsmobile', 'Opel',
+    'Packard', 'Peugeot', 'Plymouth', 'Polaris', 'Polestar', 'Pontiac', 'Porsche', 'Renault', 'Rolls-Royce',
+    'Rover', 'Saab', 'Seat', 'Skoda', 'Smart', 'SsangYong', 'Subaru', 'Suzuki', 'SWM', 'Tesla', 'Toyota',
+    'Triumph', 'Volkswagen', 'Volvo', 'Westfield', 'Wiesmann', 'Xpeng', 'Zastava', 'Autres voitures'
+  ],
+
+  // Utilitaires
+  utility: [
+    'Citroën', 'Fiat', 'Ford', 'Iveco', 'MAN', 'Maxus', 'Mercedes-Benz', 'Nissan', 'Opel', 'Peugeot',
+    'Renault', 'Toyota', 'Volkswagen', 'Autres utilitaires'
+  ],
+
+  // Caravanes (utilise les mêmes marques que les utilitaires pour l'instant)
+  caravan: [
+    'Adria', 'Bürstner', 'Caravelair', 'Chausson', 'Dethleffs', 'Eriba', 'Fendt', 'Hobby', 'Hymer',
+    'Knaus', 'LMC', 'Rapido', 'Sterckeman', 'Tabbert', 'Trigano', 'Weinsberg', 'Wilk', 'Autres caravanes'
+  ],
+
+  // Remorques
+  trailer: [
+    'Anssems', 'Böckmann', 'Brenderup', 'Hapert', 'Humbaur', 'Lider', 'Martz', 'Norauto', 'Saris',
+    'Trigano', 'Unsinn', 'Autres remorques'
+  ],
+
+  // Motos
+  motorcycle: [
+    'Aprilia', 'Benelli', 'Beta', 'BMW', 'Brixton', 'CFMOTO', 'Daelim', 'Derbi', 'Ducati', 'Energica',
+    'Fantic', 'GasGas', 'Harley-Davidson', 'Honda', 'Husaberg', 'Husqvarna', 'Indian', 'Kawasaki',
+    'Keeway', 'KTM', 'Kymco', 'Mash', 'MBK', 'Moto Guzzi', 'MV Agusta', 'Norton', 'Orcal', 'Peugeot',
+    'Piaggio', 'Quadro', 'Rieju', 'Royal Enfield', 'Sherco', 'Suzuki', 'SWM', 'Sym', 'TGB', 'Triumph',
+    'Vespa', 'Victory', 'Yamaha', 'Zontes', 'Zündapp', 'Autres motos'
+  ],
+
+  // Scooters
+  scooter: [
+    'Aprilia', 'Baotian', 'BMW', 'Derbi', 'Gilera', 'Honda', 'Keeway', 'Kymco', 'MBK', 'Peugeot',
+    'Piaggio', 'SYM', 'Vespa', 'Yamaha', 'Zontes', 'Autre scooter'
+  ],
+
+  // Quads
+  quad: [
+    'Aeon', 'Access Motor', 'Arctic Cat', 'Can-Am', 'CFMOTO', 'Goes', 'Honda', 'Hytrack', 'Kawasaki',
+    'Kymco', 'Linhai', 'Polaris', 'Suzuki', 'TGB', 'Yamaha', 'Autres quads'
+  ],
+
+  // Jetskis
+  jetski: [
+    'Bombardier', 'Kawasaki', 'Sea-Doo', 'Yamaha', 'Autres jetski'
+  ],
+
+  // Bateaux
+  boat: [
+    'Antares', 'Bayliner', 'Bénéteau', 'Bombard', 'Cap Camarat', 'Flyer', 'Jeanneau', 'Ocqueteau',
+    'Pacific Craft', 'Quicksilver', 'Ranieri', 'Sea Ray', 'Selva', 'White Shark', 'Zodiac', 'Autres bateaux'
+  ],
+
+  // Services (pas de marques spécifiques)
+  repair: [],
+  towing: [],
+  maintenance: [],
+  other: [],
+
+  // Pièces détachées (utilise toutes les marques)
+  'moto-parts': [
+    'Aprilia', 'Benelli', 'Beta', 'BMW', 'Brixton', 'CFMOTO', 'Daelim', 'Derbi', 'Ducati', 'Energica',
+    'Fantic', 'GasGas', 'Harley-Davidson', 'Honda', 'Husaberg', 'Husqvarna', 'Indian', 'Kawasaki',
+    'Keeway', 'KTM', 'Kymco', 'Mash', 'MBK', 'Moto Guzzi', 'MV Agusta', 'Norton', 'Orcal', 'Peugeot',
+    'Piaggio', 'Quadro', 'Rieju', 'Royal Enfield', 'Sherco', 'Suzuki', 'SWM', 'Sym', 'TGB', 'Triumph',
+    'Vespa', 'Victory', 'Yamaha', 'Zontes', 'Zündapp', 'Autres motos'
+  ],
+  'vehicle-parts': [
+    'Abarth', 'AC', 'Alfa Romeo', 'Alpina', 'Alpine', 'Aston Martin', 'Audi', 'Austin', 'Austin-Healey',
+    'Baic', 'Bentley', 'BMW', 'Borgward', 'Buick', 'BYD', 'Cadillac', 'Chevrolet', 'Chrysler', 'Citroën',
+    'Cupra', 'Dacia', 'DFSK', 'Dodge', 'Donkervoort', 'DS Automobiles', 'Ferrari', 'Fiat', 'Ford',
+    'Forthing', 'Foton', 'GMC', 'Glas', 'Honda', 'Hummer', 'Hyundai', 'Ineos', 'Infiniti', 'Isuzu',
+    'JAC', 'Jaecoo', 'Jaguar', 'Jeep', 'Kia', 'KTM', 'Lada', 'Lamborghini', 'Lancia', 'Land Rover',
+    'Lexus', 'Ligier', 'Livan', 'London Taxi', 'Lotus', 'MAN', 'Maserati', 'Maxus', 'Maybach', 'Mazda',
+    'McLaren', 'Mercedes-Benz', 'MG', 'Mini', 'Mitsubishi', 'Morgan', 'Nissan', 'Oldsmobile', 'Opel',
+    'Packard', 'Peugeot', 'Plymouth', 'Polaris', 'Polestar', 'Pontiac', 'Porsche', 'Renault', 'Rolls-Royce',
+    'Rover', 'Saab', 'Seat', 'Skoda', 'Smart', 'SsangYong', 'Subaru', 'Suzuki', 'SWM', 'Tesla', 'Toyota',
+    'Triumph', 'Volkswagen', 'Volvo', 'Westfield', 'Wiesmann', 'Xpeng', 'Zastava', 'Autres voitures'
+  ]
+};
+
+// Fonction utilitaire pour obtenir les marques selon la sous-catégorie
+export const getBrandsBySubcategory = (subcategory: string): string[] => {
+  return brandsByVehicleType[subcategory as keyof typeof brandsByVehicleType] || [];
+};
 export const fuelTypes = [
   { value: 'gasoline', label: 'Essence' },
   { value: 'diesel', label: 'Diesel' },
