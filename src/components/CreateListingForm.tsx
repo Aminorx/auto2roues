@@ -206,7 +206,7 @@ const CreateListingForm: React.FC<CreateListingFormProps> = ({ isOpen, onClose, 
               }`}
             >
               <div className="flex items-center space-x-3">
-                <category.icon className="w-6 h-6 text-blue-600" />
+                <span className="w-6 h-6 flex items-center justify-center text-2xl">{category.icon}</span>
                 <div>
                   <div className="font-medium text-gray-900">{category.name}</div>
                   <div className="text-sm text-gray-500">{category.description}</div>
