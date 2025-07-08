@@ -10,8 +10,9 @@ interface FormData {
   // Étape 2: Sous-catégorie
   subcategory: string;
   
-  // Étape 3: Titre
+  // Étape 3: Titre et immatriculation
   title: string;
+  registrationNumber?: string;
   
   // Étape 4: Détails spécifiques (dynamiques selon la sous-catégorie)
   specificDetails: Record<string, any>;
@@ -89,6 +90,56 @@ const CATEGORIES = [
   }
 ];
 
+// Équipements prédéfinis pour les véhicules
+const VEHICLE_EQUIPMENT = {
+  car: [
+    'Toit ouvrant / Toit panoramique',
+    'Climatisation',
+    'GPS',
+    'Sièges chauffants',
+    'Caméra de recul',
+    'Radar de recul',
+    'Jantes alliage',
+    'Feux LED / Xénon',
+    'Vitres électriques',
+    'Airbags',
+    'Sièges électriques',
+    'Attelage',
+    'Régulateur de vitesse',
+    'Bluetooth',
+    'Système audio premium',
+    'Cuir'
+  ],
+  motorcycle: [
+    'ABS',
+    'Contrôle de traction',
+    'Modes de conduite',
+    'Éclairage LED',
+    'Quickshifter',
+    'Chauffage poignées',
+    'Pare-brise',
+    'Top case',
+    'Sacoches',
+    'Antivol',
+    'Compteur digital',
+    'USB'
+  ],
+  utility: [
+    'Climatisation',
+    'GPS',
+    'Caméra de recul',
+    'Radar de recul',
+    'Attelage',
+    'Cloison de séparation',
+    'Hayon arrière',
+    'Porte latérale',
+    'Plancher bois',
+    'Éclairage LED cargo',
+    'Prise 12V',
+    'Radio Bluetooth'
+  ]
+};
+
 export const CreateListingForm: React.FC = () => {
   const { currentUser } = useApp();
   const [currentStep, setCurrentStep] = useState(1);
@@ -96,6 +147,7 @@ export const CreateListingForm: React.FC = () => {
     category: '',
     subcategory: '',
     title: '',
+    registrationNumber: '',
     specificDetails: {},
     description: '',
     photos: [],
@@ -113,6 +165,19 @@ export const CreateListingForm: React.FC = () => {
     }
   }, [formData.category]);
 
+  // Avancement automatique des étapes
+  useEffect(() => {
+    if (currentStep === 1 && formData.category) {
+      setTimeout(() => setCurrentStep(2), 300);
+    }
+  }, [formData.category, currentStep]);
+
+  useEffect(() => {
+    if (currentStep === 2 && formData.subcategory) {
+      setTimeout(() => setCurrentStep(3), 300);
+    }
+  }, [formData.subcategory, currentStep]);
+
   const updateFormData = (field: string, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
@@ -122,6 +187,15 @@ export const CreateListingForm: React.FC = () => {
       ...prev,
       specificDetails: { ...prev.specificDetails, [field]: value }
     }));
+  };
+
+  const toggleEquipment = (equipment: string) => {
+    const currentEquipment = formData.specificDetails.equipment || [];
+    const updatedEquipment = currentEquipment.includes(equipment)
+      ? currentEquipment.filter((item: string) => item !== equipment)
+      : [...currentEquipment, equipment];
+    
+    updateSpecificDetails('equipment', updatedEquipment);
   };
 
   const nextStep = () => {
@@ -180,6 +254,12 @@ export const CreateListingForm: React.FC = () => {
     return category?.subcategories.find(sub => sub.id === formData.subcategory);
   };
 
+  // Vérifier si la sous-catégorie nécessite un numéro d'immatriculation
+  const needsRegistrationNumber = () => {
+    const vehicleSubcategories = ['car', 'motorcycle', 'utility', 'caravan', 'quad', 'jetski', 'boat'];
+    return vehicleSubcategories.includes(formData.subcategory);
+  };
+
   const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     setFormData(prev => ({
@@ -201,6 +281,8 @@ export const CreateListingForm: React.FC = () => {
 
     // Champs spécifiques pour les voitures
     if (subcategory.id === 'car') {
+      const selectedEquipment = formData.specificDetails.equipment || [];
+      
       return (
         <div className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -285,17 +367,120 @@ export const CreateListingForm: React.FC = () => {
             </select>
           </div>
 
+          {/* Équipements sous forme de cases à cocher */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className="block text-sm font-semibold text-gray-700 mb-4">
               Équipements (optionnel)
             </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {VEHICLE_EQUIPMENT.car.map((equipment) => (
+                <label
+                  key={equipment}
+                  className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedEquipment.includes(equipment)}
+                    onChange={() => toggleEquipment(equipment)}
+                    className="h-4 w-4 text-primary-bolt-500 focus:ring-primary-bolt-500 border-gray-300 rounded"
+                  />
+                  <span className="text-sm text-gray-700">{equipment}</span>
+                </label>
+              ))}
+            </div>
+            {selectedEquipment.length > 0 && (
+              <p className="text-sm text-gray-500 mt-2">
+                {selectedEquipment.length} équipement{selectedEquipment.length > 1 ? 's' : ''} sélectionné{selectedEquipment.length > 1 ? 's' : ''}
+              </p>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // Équipements pour motos
+    if (subcategory.id === 'motorcycle') {
+      const selectedEquipment = formData.specificDetails.equipment || [];
+      
+      return (
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Détails de la moto
+            </label>
             <textarea
-              value={formData.specificDetails.equipment || ''}
-              onChange={(e) => updateSpecificDetails('equipment', e.target.value)}
-              rows={3}
+              value={formData.specificDetails.details || ''}
+              onChange={(e) => updateSpecificDetails('details', e.target.value)}
+              rows={4}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-              placeholder="GPS, climatisation, jantes alliage, régulateur de vitesse..."
+              placeholder="Marque, modèle, année, cylindrée, kilométrage, etc."
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-4">
+              Équipements (optionnel)
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {VEHICLE_EQUIPMENT.motorcycle.map((equipment) => (
+                <label
+                  key={equipment}
+                  className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedEquipment.includes(equipment)}
+                    onChange={() => toggleEquipment(equipment)}
+                    className="h-4 w-4 text-primary-bolt-500 focus:ring-primary-bolt-500 border-gray-300 rounded"
+                  />
+                  <span className="text-sm text-gray-700">{equipment}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Équipements pour utilitaires
+    if (subcategory.id === 'utility') {
+      const selectedEquipment = formData.specificDetails.equipment || [];
+      
+      return (
+        <div className="space-y-6">
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Détails de l'utilitaire
+            </label>
+            <textarea
+              value={formData.specificDetails.details || ''}
+              onChange={(e) => updateSpecificDetails('details', e.target.value)}
+              rows={4}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              placeholder="Marque, modèle, année, kilométrage, type d'utilitaire, etc."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-4">
+              Équipements (optionnel)
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {VEHICLE_EQUIPMENT.utility.map((equipment) => (
+                <label
+                  key={equipment}
+                  className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedEquipment.includes(equipment)}
+                    onChange={() => toggleEquipment(equipment)}
+                    className="h-4 w-4 text-primary-bolt-500 focus:ring-primary-bolt-500 border-gray-300 rounded"
+                  />
+                  <span className="text-sm text-gray-700">{equipment}</span>
+                </label>
+              ))}
+            </div>
           </div>
         </div>
       );
@@ -304,12 +489,10 @@ export const CreateListingForm: React.FC = () => {
     // Champ générique pour les autres sous-catégories
     const placeholderText = {
       // Voitures - Utilitaires
-      'utility': 'Marque, modèle, année, kilométrage, type d\'utilitaire, etc.',
       'caravan': 'Marque, modèle, année, nombre de places, équipements, etc.',
       'trailer': 'Type de remorque, charge utile, dimensions, etc.',
       
       // Motos, Scooters, Quads, Nautisme
-      'motorcycle': 'Marque, modèle, année, cylindrée, kilométrage, etc.',
       'scooter': 'Marque, modèle, année, cylindrée, kilométrage, etc.',
       'quad': 'Marque, modèle, année, cylindrée, type (sport/utilitaire), etc.',
       'jetski': 'Marque, modèle, année, puissance, heures de fonctionnement, etc.',
@@ -377,12 +560,17 @@ export const CreateListingForm: React.FC = () => {
             </div>
           </div>
 
-          {/* Titre et prix */}
+          {/* Titre, immatriculation et prix */}
           <div className="bg-gray-50 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Titre et prix</h3>
             <div className="flex justify-between items-start">
               <div className="flex-1">
-                <h4 className="text-xl font-bold text-gray-900">{formData.title}</h4>
+                <h4 className="text-xl font-bold text-gray-900 mb-2">{formData.title}</h4>
+                {formData.registrationNumber && (
+                  <p className="text-sm text-gray-600">
+                    <span className="font-medium">Immatriculation:</span> {formData.registrationNumber}
+                  </p>
+                )}
               </div>
               <div className="text-right">
                 <div className="text-2xl font-bold text-primary-bolt-500">
@@ -396,40 +584,68 @@ export const CreateListingForm: React.FC = () => {
           <div className="bg-gray-50 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Détails spécifiques</h3>
             {formData.subcategory === 'car' ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <div>
-                  <span className="text-sm text-gray-600">Marque:</span>
-                  <p className="font-medium">{formData.specificDetails.brand || 'Non renseigné'}</p>
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div>
+                    <span className="text-sm text-gray-600">Marque:</span>
+                    <p className="font-medium">{formData.specificDetails.brand || 'Non renseigné'}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Modèle:</span>
+                    <p className="font-medium">{formData.specificDetails.model || 'Non renseigné'}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Année:</span>
+                    <p className="font-medium">{formData.specificDetails.year || 'Non renseigné'}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Kilométrage:</span>
+                    <p className="font-medium">
+                      {formData.specificDetails.mileage ? `${formData.specificDetails.mileage.toLocaleString('fr-FR')} km` : 'Non renseigné'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Carburant:</span>
+                    <p className="font-medium">
+                      {fuelTypes.find(f => f.value === formData.specificDetails.fuelType)?.label || 'Non renseigné'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <span className="text-sm text-gray-600">Modèle:</span>
-                  <p className="font-medium">{formData.specificDetails.model || 'Non renseigné'}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600">Année:</span>
-                  <p className="font-medium">{formData.specificDetails.year || 'Non renseigné'}</p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600">Kilométrage:</span>
-                  <p className="font-medium">
-                    {formData.specificDetails.mileage ? `${formData.specificDetails.mileage.toLocaleString('fr-FR')} km` : 'Non renseigné'}
-                  </p>
-                </div>
-                <div>
-                  <span className="text-sm text-gray-600">Carburant:</span>
-                  <p className="font-medium">
-                    {fuelTypes.find(f => f.value === formData.specificDetails.fuelType)?.label || 'Non renseigné'}
-                  </p>
-                </div>
-                {formData.specificDetails.equipment && (
-                  <div className="md:col-span-3">
-                    <span className="text-sm text-gray-600">Équipements:</span>
-                    <p className="font-medium">{formData.specificDetails.equipment}</p>
+                {formData.specificDetails.equipment && formData.specificDetails.equipment.length > 0 && (
+                  <div>
+                    <span className="text-sm text-gray-600 block mb-2">Équipements:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.specificDetails.equipment.map((equipment: string, index: number) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-primary-bolt-100 text-primary-bolt-500 text-xs rounded-full"
+                        >
+                          {equipment}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
             ) : (
-              <p className="text-gray-700">{formData.specificDetails.details || 'Aucun détail spécifique renseigné'}</p>
+              <div>
+                <p className="text-gray-700">{formData.specificDetails.details || 'Aucun détail spécifique renseigné'}</p>
+                {formData.specificDetails.equipment && formData.specificDetails.equipment.length > 0 && (
+                  <div className="mt-4">
+                    <span className="text-sm text-gray-600 block mb-2">Équipements:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.specificDetails.equipment.map((equipment: string, index: number) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-primary-bolt-100 text-primary-bolt-500 text-xs rounded-full"
+                        >
+                          {equipment}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             )}
           </div>
 
@@ -597,26 +813,48 @@ export const CreateListingForm: React.FC = () => {
               </p>
             </div>
 
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Titre *
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => updateFormData('title', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all text-lg"
-                placeholder="Ex: BMW 320d - Excellent état, entretien suivi"
-                maxLength={100}
-              />
-              <div className="flex justify-between items-center mt-2">
-                <p className="text-sm text-gray-500">
-                  Un bon titre augmente vos chances de vente
-                </p>
-                <span className="text-sm text-gray-400">
-                  {formData.title.length}/100
-                </span>
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Titre *
+                </label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => updateFormData('title', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all text-lg"
+                  placeholder="Ex: BMW 320d - Excellent état, entretien suivi"
+                  maxLength={100}
+                />
+                <div className="flex justify-between items-center mt-2">
+                  <p className="text-sm text-gray-500">
+                    Un bon titre augmente vos chances de vente
+                  </p>
+                  <span className="text-sm text-gray-400">
+                    {formData.title.length}/100
+                  </span>
+                </div>
               </div>
+
+              {/* Champ d'immatriculation conditionnel */}
+              {needsRegistrationNumber() && (
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Numéro d'immatriculation (optionnel)
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.registrationNumber || ''}
+                    onChange={(e) => updateFormData('registrationNumber', e.target.value)}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                    placeholder="Ex: AB-123-CD"
+                    maxLength={20}
+                  />
+                  <p className="text-sm text-gray-500 mt-2">
+                    Ce numéro nous aidera à pré-remplir automatiquement les informations de votre véhicule
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         );
