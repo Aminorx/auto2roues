@@ -50,28 +50,28 @@ export const Hero: React.FC<HeroProps> = ({ setCurrentView }) => {
       id: 'car',
       name: 'Voitures - Utilitaires',
       description: 'Berlines, SUV, citadines, sportives, Fourgons, camions, véhicules pro',
-      image: '/src/assets/voiture.png',
+      icon: Car,
       color: 'from-[#0CBFDE] to-[#0AA5C7]'
     },
     {
       id: 'motorcycle',
       name: 'Motos, Scooters, Quads, Nautisme',
       description: 'Tous types de motos, scooters, Quads, Jestkis, bateaux',
-      image: '/src/assets/moto.png',
+      icon: Bike,
       color: 'from-[#0CBFDE] to-[#0AA5C7]'
     },
     {
       id: 'services',
       name: 'Services',
       description: 'Tous services et travaux de réparation ou de maintenance liée aux véhicules',
-      image: '/src/assets/utilitaire.png',
+      icon: Wrench,
       color: 'from-[#0CBFDE] to-[#0AA5C7]'
     },
     {
       id: 'parts',
       name: 'Pièces détachées',
       description: 'Pièces auto, moto et accessoires pour tout type de véhicules',
-      image: '/src/assets/pieces.png',
+      icon: Truck,
       color: 'from-[#0CBFDE] to-[#0AA5C7]'
     },
   ];
@@ -204,7 +204,7 @@ export const Hero: React.FC<HeroProps> = ({ setCurrentView }) => {
                 </p>
                 
                 <button
-                  onClick={() => setCurrentView('create-listing')}
+                  onClick={handleCreateListing}
                   className="bg-white text-primary-bolt-500 hover:bg-gray-50 px-8 py-4 rounded-lg font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-200 flex items-center space-x-2 mx-auto mb-12"
                 >
                   <Plus className="h-5 w-5" />
@@ -239,35 +239,34 @@ export const Hero: React.FC<HeroProps> = ({ setCurrentView }) => {
       <section className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {mainCategories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => handleCategoryClick(category.id)}
-                className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden p-8 text-center hover:scale-105 transform relative"
-              >
-                {/* Category Image - White background without shadow */}
-                <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center relative bg-white rounded-2xl">
-                  <img 
-                    src={category.image} 
-                    alt={category.name}
-                    className="w-16 h-16 object-contain group-hover:scale-110 transition-transform duration-300"
-                  />
-                </div>
-                
-                {/* Category Title */}
-                <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-bolt-500 transition-colors">
-                  {category.name}
-                </h3>
-                
-                {/* Category Description */}
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  {category.description}
-                </p>
-                
-                {/* Hover Effect Border */}
-                <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary-bolt-500 rounded-2xl transition-all duration-300"></div>
-              </button>
-            ))}
+            {mainCategories.map((category) => {
+              const IconComponent = category.icon;
+              return (
+                <button
+                  key={category.id}
+                  onClick={() => handleCategoryClick(category.id)}
+                  className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 overflow-hidden p-8 text-center hover:scale-105 transform relative"
+                >
+                  {/* Category Icon */}
+                  <div className="w-24 h-24 mx-auto mb-6 flex items-center justify-center relative bg-white rounded-2xl">
+                    <IconComponent className="w-16 h-16 text-primary-bolt-500 group-hover:scale-110 transition-transform duration-300" />
+                  </div>
+                  
+                  {/* Category Title */}
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-primary-bolt-500 transition-colors">
+                    {category.name}
+                  </h3>
+                  
+                  {/* Category Description */}
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    {category.description}
+                  </p>
+                  
+                  {/* Hover Effect Border */}
+                  <div className="absolute inset-0 border-2 border-transparent group-hover:border-primary-bolt-500 rounded-2xl transition-all duration-300"></div>
+                </button>
+              );
+            })}
           </div>
         </div>
       </section>
