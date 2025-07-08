@@ -15,7 +15,7 @@ export const Header: React.FC<HeaderProps> = ({
   mobileMenuOpen, 
   setMobileMenuOpen 
 }) => {
-  const { currentUser, setCurrentUser, setShowAuthModal, setAuthMode } = useApp();
+  const { currentUser, setCurrentUser, setShowAuthModal, setAuthMode, setSearchFilters } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState('vehicles');
 
@@ -38,7 +38,25 @@ export const Header: React.FC<HeaderProps> = ({
 
   const handleCategoryClick = (category: string) => {
     setActiveCategory(category);
-    // Here you would typically filter content based on category
+    setMobileMenuOpen(false);
+    
+    if (category === 'conseils') {
+      setCurrentView('conseils');
+    } else {
+      // Map category IDs to filter values
+      const categoryMap: { [key: string]: string } = {
+        'car-utility': 'car',
+        'moto-quad-marine': 'motorcycle',
+        'services': 'services',
+        'spare-parts': 'parts'
+      };
+      
+      const filterCategory = categoryMap[category];
+      if (filterCategory) {
+        setSearchFilters({ category: filterCategory });
+        setCurrentView('listings');
+      }
+    }
   };
 
   const categories = [

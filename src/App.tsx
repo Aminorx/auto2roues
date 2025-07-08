@@ -7,6 +7,7 @@ import { VehicleDetail } from './components/VehicleDetail';
 import { AuthModal } from './components/AuthModal';
 import { Dashboard } from './components/Dashboard';
 import { CreateListingForm } from './components/CreateListingForm';
+import { Conseils } from './components/Conseils';
 
 function AppContent() {
   const [currentView, setCurrentView] = useState('home');
@@ -25,6 +26,8 @@ function AppContent() {
         return <Dashboard />;
       case 'create-listing':
         return <CreateListingForm />;
+      case 'conseils':
+        return <Conseils />;
       case 'messages':
         return (
           <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
