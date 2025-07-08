@@ -183,7 +183,7 @@ const EMISSION_CLASSES = [
 ];
 
 export const CreateListingForm: React.FC = () => {
-  const { currentUser } = useApp();
+  const { currentUser, setShowAuthModal, setAuthMode } = useApp();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
     category: '',
@@ -1321,12 +1321,44 @@ export const CreateListingForm: React.FC = () => {
   if (!currentUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="text-center bg-white p-12 rounded-2xl shadow-xl border border-gray-100">
+        <div className="text-center bg-white p-12 rounded-2xl shadow-xl border border-gray-100 max-w-md mx-4">
           <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <span className="text-4xl">🔒</span>
           </div>
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Connexion requise</h2>
-          <p className="text-gray-600 text-lg">Vous devez être connecté pour déposer une annonce.</p>
+          <p className="text-gray-600 text-lg mb-8">Vous devez être connecté pour déposer une annonce.</p>
+          
+          <div className="space-y-4">
+            <button
+              onClick={() => {
+                setAuthMode('login');
+                setShowAuthModal(true);
+              }}
+              className="w-full bg-gradient-to-r from-primary-bolt-500 to-primary-bolt-600 hover:from-primary-bolt-600 hover:to-primary-bolt-700 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-200 shadow-lg hover:shadow-xl"
+            >
+              Se connecter
+            </button>
+            
+            <button
+              onClick={() => {
+                setAuthMode('register');
+                setShowAuthModal(true);
+              }}
+              className="w-full border-2 border-primary-bolt-500 text-primary-bolt-500 hover:bg-primary-bolt-50 py-3 px-6 rounded-xl font-semibold transition-all duration-200"
+            >
+              Créer un compte
+            </button>
+          </div>
+          
+          <div className="mt-8 p-4 bg-primary-bolt-50 rounded-xl">
+            <h3 className="font-semibold text-primary-bolt-500 mb-2">Pourquoi se connecter ?</h3>
+            <ul className="text-sm text-gray-600 space-y-1">
+              <li>• Gérer vos annonces facilement</li>
+              <li>• Recevoir des messages d'acheteurs</li>
+              <li>• Accéder aux statistiques de vos annonces</li>
+              <li>• Bénéficier d'options premium</li>
+            </ul>
+          </div>
         </div>
       </div>
     );
