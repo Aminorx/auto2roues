@@ -132,7 +132,16 @@ export const CreateListingForm: React.FC = () => {
     contact: { phone: '', email: '', hidePhone: false }
   });
 
-  const totalSteps = 10; // Ajout d'une étape de récapitulatif
+  // Calculer le nombre total d'étapes selon la catégorie
+  const getTotalSteps = () => {
+    const selectedCategory = getSelectedCategory();
+    if (selectedCategory?.id === 'services') {
+      return 9; // Une étape en moins pour les services (pas de titre)
+    }
+    return 10; // Nombre normal d'étapes
+  };
+
+  const totalSteps = getTotalSteps();
 
   // Réinitialiser la sous-catégorie quand la catégorie change
   useEffect(() => {
@@ -150,7 +159,14 @@ export const CreateListingForm: React.FC = () => {
 
   useEffect(() => {
     if (currentStep === 2 && formData.subcategory) {
-      setTimeout(() => setCurrentStep(3), 300);
+      const selectedCategory = getSelectedCategory();
+      if (selectedCategory?.id === 'services') {
+        // Pour les services, passer directement à l'étape 4 (détails spécifiques)
+        setTimeout(() => setCurrentStep(4), 300);
+      } else {
+        // Pour les autres catégories, aller à l'étape 3 (titre)
+        setTimeout(() => setCurrentStep(3), 300);
+      }
     }
   }, [formData.subcategory, currentStep]);
 
@@ -261,21 +277,33 @@ export const CreateListingForm: React.FC = () => {
   };
 
   const canProceed = () => {
+    const selectedCategory = getSelectedCategory();
+    
     switch (currentStep) {
       case 1:
         return formData.category !== '';
       case 2:
         return formData.subcategory !== '';
       case 3:
+        // Pour les services, l'étape 3 n'existe pas
+        if (selectedCategory?.id === 'services') {
+          return false; // Cette étape ne devrait pas exister pour les services
+        }
         return formData.title.trim() !== '';
       case 4:
-        // Validation spécifique pour les voitures
-        if (formData.subcategory === 'car') {
-          return formData.specificDetails.brand && 
-                 formData.specificDetails.model && 
-                 formData.specificDetails.year && 
-                 formData.specificDetails.mileage && 
-                 formData.specificDetails.fuelType;
+        if (selectedCategory?.id === 'services') {
+          // Pour les services, l'étape 4 correspond aux détails spécifiques
+          return true; // Permettre de passer même sans détails pour les services
+        } else {
+          // Pour les autres catégories, validation spécifique
+          if (formData.subcategory === 'car') {
+            return formData.specificDetails.brand && 
+                   formData.specificDetails.model && 
+                   formData.specificDetails.year && 
+                   formData.specificDetails.mileage && 
+                   formData.specificDetails.fuelType;
+          }
+          return true;
         }
         // Pour les services, pas de validation spécifique
         if (['repair', 'towing', 'maintenance', 'other'].includes(formData.subcategory)) {
@@ -286,19 +314,39 @@ export const CreateListingForm: React.FC = () => {
         if (availableBrands.length > 0) {
           return formData.specificDetails.brand;
         }
-        return true;
       case 5:
-        return formData.description.trim() !== '';
+        if (selectedCategory?.id === 'services') {
+          // Pour les services, l'étape 5 correspond à la description
+          return formData.description.trim() !== '';
+        } else {
+          return formData.description.trim() !== '';
+        }
       case 6:
-        return true; // Photos optionnelles
+        return true; // Photos optionnelles pour tous
       case 7:
-        return formData.price > 0;
+        if (selectedCategory?.id === 'services') {
+          // Pour les services, l'étape 7 correspond au prix
+          return formData.price > 0;
+        } else {
+          return formData.price > 0;
+        }
       case 8:
-        return formData.location.city !== '' && formData.location.postalCode !== '';
+        if (selectedCategory?.id === 'services') {
+          // Pour les services, l'étape 8 correspond à la localisation
+          return formData.location.city !== '' && formData.location.postalCode !== '';
+        } else {
+          return formData.location.city !== '' && formData.location.postalCode !== '';
+        }
       case 9:
-        return formData.contact.phone !== '';
+        if (selectedCategory?.id === 'services') {
+          // Pour les services, l'étape 9 correspond au contact
+          return formData.contact.phone !== '';
+        } else {
+          return formData.contact.phone !== '';
+        }
       case 10:
-        return true; // Étape de récapitulatif
+        // Étape de récapitulatif (n'existe que pour les non-services)
+        return selectedCategory?.id !== 'services';
       default:
         return false;
     }
@@ -919,174 +967,510 @@ export const CreateListingForm: React.FC = () => {
   };
 
   const renderStepContent = () => {
+    const selectedCategory = getSelectedCategory();
+    
+    // Pour les services, ajuster les numéros d'étapes
+    if (selectedCategory?.id === 'services') {
+      switch (currentStep) {
+        case 1:
+          return renderCategoryStep();
+        case 2:
+          return renderSubcategoryStep();
+        case 4: // Pas d'étape 3 pour les services
+          return renderSpecificDetailsStep();
+        case 5:
+          return renderDescriptionStep();
+        case 6:
+          return renderPhotosStep();
+        case 7:
+          return renderPriceStep();
+        case 8:
+          return renderLocationStep();
+        case 9:
+          return renderContactStep();
+        default:
+          return null;
+      }
+    }
+    
+    // Pour les autres catégories, comportement normal
     switch (currentStep) {
       case 1:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Choisissez une catégorie
-              </h2>
-              <p className="text-gray-600">
-                Sélectionnez la catégorie qui correspond le mieux à votre annonce
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {CATEGORIES.map((category) => {
-                const IconComponent = category.icon;
-                return (
-                  <button
-                    key={category.id}
-                    onClick={() => updateFormData('category', category.id)}
-                    className={`relative p-6 rounded-2xl border-2 transition-all duration-200 text-left ${
-                      formData.category === category.id
-                        ? 'border-primary-bolt-500 bg-primary-bolt-50'
-                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="flex items-start space-x-4">
-                      <div className={`p-3 rounded-xl bg-gradient-to-r ${category.color} shadow-lg`}>
-                        <IconComponent className="h-6 w-6 text-white" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                          {category.name}
-                        </h3>
-                        <p className="text-sm text-gray-600">
-                          {category.subcategories.map(sub => sub.name).join(', ')}
-                        </p>
-                      </div>
-                    </div>
-                    
-                    {formData.category === category.id && (
-                      <div className="absolute top-4 right-4">
-                        <div className="w-6 h-6 bg-primary-bolt-500 rounded-full flex items-center justify-center">
-                          <Check className="h-4 w-4 text-white" />
-                        </div>
-                      </div>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        );
-
+        return renderCategoryStep();
       case 2:
-        const selectedCategory = getSelectedCategory();
-        if (!selectedCategory) return null;
+        return renderSubcategoryStep();
+      case 3:
+        return renderTitleStep();
+      case 4:
+        return renderSpecificDetailsStep();
+      case 5:
+        return renderDescriptionStep();
+      case 6:
+        return renderPhotosStep();
+      case 7:
+        return renderPriceStep();
+      case 8:
+        return renderLocationStep();
+      case 9:
+        return renderContactStep();
+      case 10:
+        return renderRecapStep();
+      default:
+        return null;
+    }
+  };
 
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Choisissez une sous-catégorie
-              </h2>
-              <p className="text-gray-600">
-                Précisez le type de {selectedCategory.name.toLowerCase()}
-              </p>
-            </div>
+  const renderCategoryStep = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Choisissez une catégorie
+        </h2>
+        <p className="text-gray-600">
+          Sélectionnez la catégorie qui correspond le mieux à votre annonce
+        </p>
+      </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {selectedCategory.subcategories.map((subcategory) => (
-                <button
-                  key={subcategory.id}
-                  onClick={() => updateFormData('subcategory', subcategory.id)}
-                  className={`p-4 rounded-xl border-2 transition-all duration-200 text-center ${
-                    formData.subcategory === subcategory.id
-                      ? 'border-primary-bolt-500 bg-primary-bolt-50'
-                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                  }`}
-                >
-                  <h3 className="font-semibold text-gray-900">
-                    {subcategory.name}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {CATEGORIES.map((category) => {
+          const IconComponent = category.icon;
+          return (
+            <button
+              key={category.id}
+              onClick={() => updateFormData('category', category.id)}
+              className={`relative p-6 rounded-2xl border-2 transition-all duration-200 text-left ${
+                formData.category === category.id
+                  ? 'border-primary-bolt-500 bg-primary-bolt-50'
+                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              <div className="flex items-start space-x-4">
+                <div className={`p-3 rounded-xl bg-gradient-to-r ${category.color} shadow-lg`}>
+                  <IconComponent className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                    {category.name}
                   </h3>
-                  
-                  {formData.subcategory === subcategory.id && (
-                    <div className="mt-2">
-                      <div className="w-6 h-6 bg-primary-bolt-500 rounded-full flex items-center justify-center mx-auto">
-                        <Check className="h-4 w-4 text-white" />
-                      </div>
-                    </div>
-                  )}
-                </button>
+                  <p className="text-sm text-gray-600">
+                    {category.subcategories.map(sub => sub.name).join(', ')}
+                  </p>
+                </div>
+              </div>
+              
+              {formData.category === category.id && (
+                <div className="absolute top-4 right-4">
+                  <div className="w-6 h-6 bg-primary-bolt-500 rounded-full flex items-center justify-center">
+                    <Check className="h-4 w-4 text-white" />
+                  </div>
+                </div>
+              )}
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  const renderSubcategoryStep = () => {
+    const selectedCategory = getSelectedCategory();
+    if (!selectedCategory) return null;
+
+    return (
+      <div className="space-y-6">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">
+            Choisissez une sous-catégorie
+          </h2>
+          <p className="text-gray-600">
+            Précisez le type de {selectedCategory.name.toLowerCase()}
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {selectedCategory.subcategories.map((subcategory) => (
+            <button
+              key={subcategory.id}
+              onClick={() => updateFormData('subcategory', subcategory.id)}
+              className={`p-4 rounded-xl border-2 transition-all duration-200 text-center ${
+                formData.subcategory === subcategory.id
+                  ? 'border-primary-bolt-500 bg-primary-bolt-50'
+                  : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              <h3 className="font-semibold text-gray-900">
+                {subcategory.name}
+              </h3>
+              
+              {formData.subcategory === subcategory.id && (
+                <div className="mt-2">
+                  <div className="w-6 h-6 bg-primary-bolt-500 rounded-full flex items-center justify-center mx-auto">
+                    <Check className="h-4 w-4 text-white" />
+                  </div>
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
+  const renderTitleStep = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Titre de votre annonce
+        </h2>
+        <p className="text-gray-600">
+          Rédigez un titre accrocheur et descriptif
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Titre *
+          </label>
+          <input
+            type="text"
+            value={formData.title}
+            onChange={(e) => updateFormData('title', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all text-lg"
+            placeholder="Ex: BMW 320d - Excellent état, entretien suivi"
+            maxLength={100}
+          />
+          <div className="flex justify-between items-center mt-2">
+            <p className="text-sm text-gray-500">
+              Un bon titre augmente vos chances de vente
+            </p>
+            <span className="text-sm text-gray-400">
+              {formData.title.length}/100
+            </span>
+          </div>
+        </div>
+
+        {/* Champ d'immatriculation conditionnel */}
+        {needsRegistrationNumber() && (
+          <div className="space-y-6">
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Numéro d'immatriculation (optionnel)
+            </label>
+            <input
+              type="text"
+              value={formData.registrationNumber || ''}
+              onChange={(e) => updateFormData('registrationNumber', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              placeholder="Ex: AB-123-CD"
+              maxLength={20}
+            />
+            <p className="text-sm text-gray-500 mt-2">
+              Ce numéro nous aidera à pré-remplir automatiquement les informations de votre véhicule
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderSpecificDetailsStep = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Détails spécifiques
+        </h2>
+        <p className="text-gray-600">
+          Renseignez les caractéristiques importantes de votre {getSelectedSubcategory()?.name.toLowerCase()}
+        </p>
+      </div>
+
+      {renderSpecificDetailsFields()}
+    </div>
+  );
+
+  const renderDescriptionStep = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Description détaillée
+        </h2>
+        <p className="text-gray-600">
+          Décrivez votre {getSelectedSubcategory()?.name.toLowerCase()} en détail
+        </p>
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Description *
+        </label>
+        <textarea
+          value={formData.description}
+          onChange={(e) => updateFormData('description', e.target.value)}
+          rows={8}
+          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+          placeholder="Décrivez l'état, l'historique, les équipements, les points forts..."
+        />
+        <p className="text-sm text-gray-500 mt-2">
+          Plus votre description est détaillée, plus vous avez de chances d'attirer des acheteurs sérieux.
+        </p>
+      </div>
+    </div>
+  );
+
+  const renderPhotosStep = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Photos de votre {getSelectedSubcategory()?.name.toLowerCase()}
+        </h2>
+        <p className="text-gray-600">
+          Ajoutez des photos de qualité pour attirer plus d'acheteurs
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        {/* Zone de upload */}
+        <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center hover:border-primary-bolt-500 transition-colors">
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handlePhotoUpload}
+            className="hidden"
+            id="photo-upload"
+          />
+          <label htmlFor="photo-upload" className="cursor-pointer">
+            <Camera className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">
+              Glissez vos photos ici
+            </h3>
+            <p className="text-gray-600 mb-4">
+              ou cliquez pour sélectionner des fichiers
+            </p>
+            <div className="bg-primary-bolt-500 text-white px-6 py-2 rounded-lg hover:bg-primary-bolt-600 transition-colors inline-block">
+              Choisir des photos
+            </div>
+          </label>
+        </div>
+
+        {/* Aperçu des photos */}
+        {formData.photos.length > 0 && (
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">
+              Photos sélectionnées ({formData.photos.length})
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {formData.photos.map((photo, index) => (
+                <div key={index} className="relative group">
+                  <img
+                    src={URL.createObjectURL(photo)}
+                    alt={`Photo ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-lg"
+                  />
+                  <button
+                    onClick={() => removePhoto(index)}
+                    className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </div>
               ))}
             </div>
           </div>
-        );
+        )}
+      </div>
+    </div>
+  );
 
-      case 3:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Titre de votre annonce
-              </h2>
-              <p className="text-gray-600">
-                Rédigez un titre accrocheur et descriptif
-              </p>
-            </div>
+  const renderPriceStep = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Prix de vente
+        </h2>
+        <p className="text-gray-600">
+          Fixez un prix attractif pour votre {getSelectedSubcategory()?.name.toLowerCase()}
+        </p>
+      </div>
 
-            <div className="space-y-6">
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Titre *
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => updateFormData('title', e.target.value)}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all text-lg"
-                  placeholder="Ex: BMW 320d - Excellent état, entretien suivi"
-                  maxLength={100}
-                />
-                <div className="flex justify-between items-center mt-2">
-                  <p className="text-sm text-gray-500">
-                    Un bon titre augmente vos chances de vente
-                  </p>
-                  <span className="text-sm text-gray-400">
-                    {formData.title.length}/100
-                  </span>
-                </div>
-              </div>
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-2">
+          Prix (€) *
+        </label>
+        <div className="relative">
+          <input
+            type="number"
+            value={formData.price || ''}
+            onChange={(e) => updateFormData('price', parseInt(e.target.value) || 0)}
+            className="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all text-lg"
+            placeholder="0"
+            min="0"
+          />
+          <span className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">
+            €
+          </span>
+        </div>
+        <p className="text-sm text-gray-500 mt-2">
+          Consultez des annonces similaires pour fixer un prix compétitif
+        </p>
+      </div>
+    </div>
+  );
 
-              {/* Champ d'immatriculation conditionnel */}
-              {needsRegistrationNumber() && (
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Numéro d'immatriculation (optionnel)
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.registrationNumber || ''}
-                    onChange={(e) => updateFormData('registrationNumber', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-                    placeholder="Ex: AB-123-CD"
-                    maxLength={20}
-                  />
-                  <p className="text-sm text-gray-500 mt-2">
-                    Ce numéro nous aidera à pré-remplir automatiquement les informations de votre véhicule
-                  </p>
-                </div>
-              )}
-            </div>
-          </div>
-        );
+  const renderLocationStep = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Localisation
+        </h2>
+        <p className="text-gray-600">
+          Où se trouve votre {getSelectedSubcategory()?.name.toLowerCase()} ?
+        </p>
+      </div>
 
-      case 4:
-        return (
-          <div className="space-y-6">
-            <div className="text-center mb-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Informations du véhicule
-              </h2>
-              <p className="text-gray-600">
-                Renseignez les informations de votre {getSelectedSubcategory()?.name.toLowerCase()}
-              </p>
-            </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Ville *
+          </label>
+          <input
+            type="text"
+            value={formData.location.city}
+            onChange={(e) => updateFormData('location', { ...formData.location, city: e.target.value })}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+            placeholder="Paris"
+          />
+        </div>
 
-            {renderSpecificDetailsFields()}
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Code postal *
+          </label>
+          <input
+            type="text"
+            value={formData.location.postalCode}
+            onChange={(e) => updateFormData('location', { ...formData.location, postalCode: e.target.value })}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+            placeholder="75001"
+            maxLength={5}
+          />
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderContactStep = () => (
+    <div className="space-y-6">
+      <div className="text-center mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-2">
+          Informations de contact
+        </h2>
+        <p className="text-gray-600">
+          Comment les acheteurs peuvent-ils vous contacter ?
+        </p>
+      </div>
+
+      <div className="space-y-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Téléphone *
+          </label>
+          <input
+            type="tel"
+            value={formData.contact.phone}
+            onChange={(e) => updateFormData('contact', { ...formData.contact, phone: e.target.value })}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+            placeholder="+33 6 12 34 56 78"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Email (optionnel)
+          </label>
+          <input
+            type="email"
+            value={formData.contact.email}
+            onChange={(e) => updateFormData('contact', { ...formData.contact, email: e.target.value })}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+            placeholder="votre@email.com"
+          />
+        </div>
+
+        <div className="flex items-center space-x-3">
+          <input
+            type="checkbox"
+            id="hidePhone"
+            checked={formData.contact.hidePhone}
+            onChange={(e) => updateFormData('contact', { ...formData.contact, hidePhone: e.target.checked })}
+            className="h-4 w-4 text-primary-bolt-500 focus:ring-primary-bolt-500 border-gray-300 rounded"
+          />
+          <label htmlFor="hidePhone" className="text-sm text-gray-700">
+            Masquer mon numéro de téléphone dans l'annonce
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Fonction pour générer automatiquement un titre pour les services
+  const generateServiceTitle = () => {
+    const subcategory = getSelectedSubcategory();
+    if (!subcategory) return '';
+    
+    const serviceTitles = {
+      'repair': 'Service de réparation automobile',
+      'towing': 'Service de remorquage',
+      'maintenance': 'Service d\'entretien véhicules',
+      'other': 'Service automobile'
+    };
+    
+    return serviceTitles[subcategory.id as keyof typeof serviceTitles] || 'Service automobile';
+  };
+
+  // Mettre à jour automatiquement le titre pour les services
+  useEffect(() => {
+    const selectedCategory = getSelectedCategory();
+    if (selectedCategory?.id === 'services' && formData.subcategory && !formData.title) {
+      updateFormData('title', generateServiceTitle());
+    }
+  }, [formData.subcategory]);
+
+  const nextStep = () => {
+    const selectedCategory = getSelectedCategory();
+    
+    if (selectedCategory?.id === 'services') {
+      // Pour les services, sauter l'étape 3 (titre)
+      if (currentStep === 2) {
+        setCurrentStep(4);
+      } else if (currentStep < totalSteps) {
+        setCurrentStep(currentStep + 1);
+      }
+    } else {
+      // Comportement normal pour les autres catégories
+      if (currentStep < totalSteps) {
+        setCurrentStep(currentStep + 1);
+      }
+    }
+  };
+
+  const prevStep = () => {
+    const selectedCategory = getSelectedCategory();
+    
+    if (selectedCategory?.id === 'services') {
+      // Pour les services, sauter l'étape 3 (titre) en arrière aussi
+      if (currentStep === 4) {
+        setCurrentStep(2);
+      } else if (currentStep > 1) {
+        setCurrentStep(currentStep - 1);
+      }
+    } else {
+      // Comportement normal pour les autres catégories
+      if (currentStep > 1) {
+        setCurrentStep(currentStep - 1);
+      }
+    }
+  };
           </div>
         );
 
