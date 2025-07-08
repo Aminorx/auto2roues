@@ -394,6 +394,154 @@ export const CreateListingForm: React.FC = () => {
               </p>
             )}
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Type de véhicule
+              </label>
+              <select
+                value={formData.specificDetails.vehicleType || ''}
+                onChange={(e) => updateSpecificDetails('vehicleType', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez un type</option>
+                <option value="citadine">Citadine</option>
+                <option value="berline">Berline</option>
+                <option value="suv">SUV</option>
+                <option value="break">Break</option>
+                <option value="coupe">Coupé</option>
+                <option value="cabriolet">Cabriolet</option>
+                <option value="monospace">Monospace</option>
+                <option value="pickup">Pick-up</option>
+                <option value="4x4">4x4</option>
+                <option value="sportive">Sportive</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Boîte de vitesses
+              </label>
+              <select
+                value={formData.specificDetails.transmission || ''}
+                onChange={(e) => updateSpecificDetails('transmission', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez une transmission</option>
+                <option value="manuelle">Manuelle</option>
+                <option value="automatique">Automatique</option>
+                <option value="semi-automatique">Semi-automatique</option>
+                <option value="cvt">CVT</option>
+                <option value="robotisee">Robotisée</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Couleur
+              </label>
+              <select
+                value={formData.specificDetails.color || ''}
+                onChange={(e) => updateSpecificDetails('color', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez une couleur</option>
+                <option value="blanc">Blanc</option>
+                <option value="noir">Noir</option>
+                <option value="gris">Gris</option>
+                <option value="argent">Argent</option>
+                <option value="bleu">Bleu</option>
+                <option value="rouge">Rouge</option>
+                <option value="vert">Vert</option>
+                <option value="jaune">Jaune</option>
+                <option value="orange">Orange</option>
+                <option value="violet">Violet</option>
+                <option value="marron">Marron</option>
+                <option value="beige">Beige</option>
+                <option value="dore">Doré</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Puissance (CV)
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.power || ''}
+                onChange={(e) => updateSpecificDetails('power', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="Ex: 150"
+                min="1"
+                max="2000"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Nombre de portes
+              </label>
+              <select
+                value={formData.specificDetails.doors || ''}
+                onChange={(e) => updateSpecificDetails('doors', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez le nombre de portes</option>
+                <option value="2">2 portes</option>
+                <option value="3">3 portes</option>
+                <option value="4">4 portes</option>
+                <option value="5">5 portes</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Sellerie
+              </label>
+              <select
+                value={formData.specificDetails.upholstery || ''}
+                onChange={(e) => updateSpecificDetails('upholstery', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez la sellerie</option>
+                <option value="tissu">Tissu</option>
+                <option value="cuir_partiel">Cuir partiel</option>
+                <option value="cuir">Cuir</option>
+                <option value="velours">Velours</option>
+                <option value="alcantara">Alcantara</option>
+                <option value="simili_cuir">Simili cuir</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Classe d'émissions
+            </label>
+            <select
+              value={formData.specificDetails.emissionClass || ''}
+              onChange={(e) => updateSpecificDetails('emissionClass', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+            >
+              <option value="">Sélectionnez la classe d'émissions</option>
+              <option value="euro1">Euro 1</option>
+              <option value="euro2">Euro 2</option>
+              <option value="euro3">Euro 3</option>
+              <option value="euro4">Euro 4</option>
+              <option value="euro5">Euro 5</option>
+              <option value="euro6">Euro 6</option>
+              <option value="euro6d">Euro 6d</option>
+              <option value="euro6d_temp">Euro 6d-TEMP</option>
+              <option value="non_classe">Non classé</option>
+            </select>
+          </div>
         </div>
       );
     }
@@ -687,31 +835,6 @@ export const CreateListingForm: React.FC = () => {
             <p className="text-gray-700 whitespace-pre-line">{formData.description}</p>
           </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Type de véhicule
-                    </label>
-                    <select
-                      value={formData.specificDetails.vehicleType || ''}
-                      onChange={(e) => updateSpecificDetails('vehicleType', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-                    >
-                      <option value="">Sélectionnez un type</option>
-                      <option value="citadine">Citadine</option>
-                      <option value="berline">Berline</option>
-                      <option value="suv">SUV</option>
-                      <option value="break">Break</option>
-                      <option value="coupe">Coupé</option>
-                      <option value="cabriolet">Cabriolet</option>
-                      <option value="monospace">Monospace</option>
-                      <option value="pickup">Pick-up</option>
-                      <option value="4x4">4x4</option>
-                      <option value="sportive">Sportive</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Photos */}
           <div className="bg-gray-50 rounded-xl p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Photos ({formData.photos.length})</h3>
@@ -724,24 +847,6 @@ export const CreateListingForm: React.FC = () => {
                       alt={`Photo ${index + 1}`}
                       className="w-full h-full object-cover rounded-lg"
                     />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Boîte de vitesses
-                    </label>
-                    <select
-                      value={formData.specificDetails.transmission || ''}
-                      onChange={(e) => updateSpecificDetails('transmission', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-                    >
-                      <option value="">Sélectionnez une transmission</option>
-                      <option value="manuelle">Manuelle</option>
-                      <option value="automatique">Automatique</option>
-                      <option value="semi-automatique">Semi-automatique</option>
-                      <option value="cvt">CVT</option>
-                      <option value="robotisee">Robotisée</option>
-                    </select>
                   </div>
                 ))}
               </div>
@@ -911,111 +1016,167 @@ export const CreateListingForm: React.FC = () => {
                 </div>
               </div>
 
-                {/* Nouveaux champs supplémentaires */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Couleur
-                    </label>
-                    <select
-                      value={formData.specificDetails.color || ''}
-                      onChange={(e) => updateSpecificDetails('color', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-                    >
-                      <option value="">Sélectionnez une couleur</option>
-                      <option value="blanc">Blanc</option>
-                      <option value="noir">Noir</option>
-                      <option value="gris">Gris</option>
-                      <option value="argent">Argent</option>
-                      <option value="bleu">Bleu</option>
-                      <option value="rouge">Rouge</option>
-                      <option value="vert">Vert</option>
-                      <option value="jaune">Jaune</option>
-                      <option value="orange">Orange</option>
-                      <option value="violet">Violet</option>
-                      <option value="marron">Marron</option>
-                      <option value="beige">Beige</option>
-                      <option value="dore">Doré</option>
-                      <option value="autre">Autre</option>
-                    </select>
-                  </div>
+          {/* Localisation et contact */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Localisation</h3>
+              <p className="text-gray-700">
+                {formData.location.city} {formData.location.postalCode}
+              </p>
+            </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Puissance (CV)
-                    </label>
-                    <input
-                      type="number"
-                      value={formData.specificDetails.power || ''}
-                      onChange={(e) => updateSpecificDetails('power', parseInt(e.target.value) || '')}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-                      placeholder="Ex: 150"
-                      min="1"
-                      max="2000"
-                    />
-                  </div>
-                </div>
+            <div className="bg-gray-50 rounded-xl p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Contact</h3>
+              <div className="space-y-2">
+                <p className="text-gray-700">
+                  <span className="font-medium">Téléphone:</span> {formData.contact.hidePhone ? 'Masqué' : formData.contact.phone}
+                </p>
+                {formData.contact.email && (
+                  <p className="text-gray-700">
+                    <span className="font-medium">Email:</span> {formData.contact.email}
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Nombre de portes
-                    </label>
-                    <select
-                      value={formData.specificDetails.doors || ''}
-                      onChange={(e) => updateSpecificDetails('doors', parseInt(e.target.value) || '')}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-                    >
-                      <option value="">Sélectionnez le nombre de portes</option>
-                      <option value="2">2 portes</option>
-                      <option value="3">3 portes</option>
-                      <option value="4">4 portes</option>
-                      <option value="5">5 portes</option>
-                    </select>
-                  </div>
+  const renderStepContent = () => {
+    switch (currentStep) {
+      case 1:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Choisissez une catégorie
+              </h2>
+              <p className="text-gray-600">
+                Sélectionnez la catégorie qui correspond le mieux à votre annonce
+              </p>
+            </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-2">
-                      Sellerie
-                    </label>
-                    <select
-                      value={formData.specificDetails.upholstery || ''}
-                      onChange={(e) => updateSpecificDetails('upholstery', e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-                    >
-                      <option value="">Sélectionnez la sellerie</option>
-                      <option value="tissu">Tissu</option>
-                      <option value="cuir_partiel">Cuir partiel</option>
-                      <option value="cuir">Cuir</option>
-                      <option value="velours">Velours</option>
-                      <option value="alcantara">Alcantara</option>
-                      <option value="simili_cuir">Simili cuir</option>
-                      <option value="autre">Autre</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Classe d'émissions
-                  </label>
-                  <select
-                    value={formData.specificDetails.emissionClass || ''}
-                    onChange={(e) => updateSpecificDetails('emissionClass', e.target.value)}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {CATEGORIES.map((category) => {
+                const IconComponent = category.icon;
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => updateFormData('category', category.id)}
+                    className={`relative p-6 rounded-2xl border-2 transition-all duration-200 text-left ${
+                      formData.category === category.id
+                        ? 'border-primary-bolt-500 bg-primary-bolt-50'
+                        : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                    }`}
                   >
-                    <option value="">Sélectionnez la classe d'émissions</option>
-                    <option value="euro1">Euro 1</option>
-                    <option value="euro2">Euro 2</option>
-                    <option value="euro3">Euro 3</option>
-                    <option value="euro4">Euro 4</option>
-                    <option value="euro5">Euro 5</option>
-                    <option value="euro6">Euro 6</option>
-                    <option value="euro6d">Euro 6d</option>
-                    <option value="euro6d_temp">Euro 6d-TEMP</option>
-                    <option value="non_classe">Non classé</option>
-                  </select>
+                    <div className="flex items-start space-x-4">
+                      <div className={`p-3 rounded-xl bg-gradient-to-r ${category.color} shadow-lg`}>
+                        <IconComponent className="h-6 w-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                          {category.name}
+                        </h3>
+                        <p className="text-sm text-gray-600">
+                          {category.subcategories.map(sub => sub.name).join(', ')}
+                        </p>
+                      </div>
+                    </div>
+                    
+                    {formData.category === category.id && (
+                      <div className="absolute top-4 right-4">
+                        <div className="w-6 h-6 bg-primary-bolt-500 rounded-full flex items-center justify-center">
+                          <Check className="h-4 w-4 text-white" />
+                        </div>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        );
+
+      case 2:
+        const selectedCategory = getSelectedCategory();
+        if (!selectedCategory) return null;
+
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Choisissez une sous-catégorie
+              </h2>
+              <p className="text-gray-600">
+                Précisez le type de {selectedCategory.name.toLowerCase()}
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {selectedCategory.subcategories.map((subcategory) => (
+                <button
+                  key={subcategory.id}
+                  onClick={() => updateFormData('subcategory', subcategory.id)}
+                  className={`p-4 rounded-xl border-2 transition-all duration-200 text-center ${
+                    formData.subcategory === subcategory.id
+                      ? 'border-primary-bolt-500 bg-primary-bolt-50'
+                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  }`}
+                >
+                  <h3 className="font-semibold text-gray-900">
+                    {subcategory.name}
+                  </h3>
+                  
+                  {formData.subcategory === subcategory.id && (
+                    <div className="mt-2">
+                      <div className="w-6 h-6 bg-primary-bolt-500 rounded-full flex items-center justify-center mx-auto">
+                        <Check className="h-4 w-4 text-white" />
+                      </div>
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        );
+
+      case 3:
+        return (
+          <div className="space-y-6">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl font-bold text-gray-900 mb-2">
+                Titre de votre annonce
+              </h2>
+              <p className="text-gray-600">
+                Rédigez un titre accrocheur et descriptif
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Titre *
+                </label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => updateFormData('title', e.target.value)}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all text-lg"
+                  placeholder="Ex: BMW 320d - Excellent état, entretien suivi"
+                  maxLength={100}
+                />
+                <div className="flex justify-between items-center mt-2">
+                  <p className="text-sm text-gray-500">
+                    Un bon titre augmente vos chances de vente
+                  </p>
+                  <span className="text-sm text-gray-400">
+                    {formData.title.length}/100
+                  </span>
                 </div>
+              </div>
+
               {/* Champ d'immatriculation conditionnel */}
               {needsRegistrationNumber() && (
                 <div>
