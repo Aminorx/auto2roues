@@ -1,7 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { ArrowLeft, ArrowRight, Upload, X, Check, Car, Bike, Wrench, Package, Camera } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
-import { brandsByVehicleType, getBrandsBySubcategory, fuelTypes } from '../utils/mockData';
+import { 
+  getBrandsBySubcategory, 
+  fuelTypes, 
+  vehicleTypes, 
+  transmissionTypes, 
+  colors, 
+  doorCounts, 
+  upholsteryTypes, 
+  emissionClasses,
+  utilityTypes,
+  caravanTypes,
+  trailerTypes,
+  motorcycleTypes,
+  scooterTypes,
+  quadTypes,
+  jetskiTypes,
+  boatTypes,
+  engineTypes,
+  partSubcategories,
+  serviceTypes,
+  VEHICLE_EQUIPMENT,
+  caravanOptions,
+  trailerOptions,
+  jetskiAccessories,
+  boatAccessories,
+  partConditions
+} from '../utils/mockData';
 
 interface FormData {
   // Étape 1: Catégorie principale
@@ -90,93 +116,6 @@ const CATEGORIES = [
   }
 ];
 
-// Équipements prédéfinis pour les véhicules
-const VEHICLE_EQUIPMENT = {
-  car: [
-    'Toit ouvrant / Toit panoramique',
-    'Climatisation',
-    'GPS',
-    'Sièges chauffants',
-    'Caméra de recul',
-    'Radar de recul',
-    'Jantes alliage',
-    'Feux LED / Xénon',
-    'Vitres électriques',
-    'Airbags',
-    'Sièges électriques',
-    'Attelage',
-    'Régulateur de vitesse',
-    'Bluetooth',
-    'Système audio premium',
-    'Cuir'
-  ],
-  motorcycle: [
-    'ABS',
-    'Contrôle de traction',
-    'Modes de conduite',
-    'Éclairage LED',
-    'Quickshifter',
-    'Chauffage poignées',
-    'Pare-brise',
-    'Top case',
-    'Sacoches',
-    'Antivol',
-    'Compteur digital',
-    'USB'
-  ],
-  scooter: [
-    'ABS',
-    'Coffre sous selle',
-    'Éclairage LED',
-    'Prise USB',
-    'Pare-brise',
-    'Top case',
-    'Antivol',
-    'Compteur digital',
-    'Démarrage électrique'
-  ],
-  utility: [
-    'Climatisation',
-    'GPS',
-    'Caméra de recul',
-    'Radar de recul',
-    'Attelage',
-    'Cloison de séparation',
-    'Hayon arrière',
-    'Porte latérale',
-    'Plancher bois',
-    'Éclairage LED cargo',
-    'Prise 12V',
-    'Radio Bluetooth'
-  ],
-  quad: [
-    'Démarrage électrique',
-    'Treuil avant',
-    'Protection inférieure',
-    'Pneus tout-terrain',
-    'Suspension réglable',
-    'Freins à disque',
-    'Direction assistée',
-    'Attelage'
-  ],
-  jetski: [
-    'GPS étanche',
-    'Système audio',
-    'Coffre étanche',
-    'Échelle de remontée',
-    'Remorque incluse'
-  ],
-  boat: [
-    'GPS marin',
-    'Sondeur',
-    'VHF',
-    'Guindeau électrique',
-    'Bimini',
-    'Taud',
-    'Remorque'
-  ]
-};
-
 export const CreateListingForm: React.FC = () => {
   const { currentUser } = useApp();
   const [currentStep, setCurrentStep] = useState(1);
@@ -233,6 +172,80 @@ export const CreateListingForm: React.FC = () => {
       : [...currentEquipment, equipment];
     
     updateSpecificDetails('equipment', updatedEquipment);
+  };
+
+  // Helper function to render common vehicle fields
+  const renderCommonVehicleFields = (subcategory: string) => {
+    const availableBrands = getBrandsBySubcategory(subcategory);
+    
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Marque *
+          </label>
+          <select
+            value={formData.specificDetails.brand || ''}
+            onChange={(e) => updateSpecificDetails('brand', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+          >
+            <option value="">Sélectionnez une marque</option>
+            {availableBrands.map((brand) => (
+              <option key={brand} value={brand}>
+                {brand}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-semibold text-gray-700 mb-2">
+            Modèle *
+          </label>
+          <input
+            type="text"
+            value={formData.specificDetails.model || ''}
+            onChange={(e) => updateSpecificDetails('model', e.target.value)}
+            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+            placeholder="Ex: 320d"
+          />
+        </div>
+      </div>
+    );
+  };
+
+  // Helper function to render equipment checkboxes
+  const renderEquipmentCheckboxes = (equipmentList: string[], title: string = 'Équipements') => {
+    const selectedEquipment = formData.specificDetails.equipment || [];
+    
+    return (
+      <div>
+        <label className="block text-sm font-semibold text-gray-700 mb-4">
+          {title} (optionnel)
+        </label>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+          {equipmentList.map((equipment) => (
+            <label
+              key={equipment}
+              className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+            >
+              <input
+                type="checkbox"
+                checked={selectedEquipment.includes(equipment)}
+                onChange={() => toggleEquipment(equipment)}
+                className="h-4 w-4 text-primary-bolt-500 focus:ring-primary-bolt-500 border-gray-300 rounded"
+              />
+              <span className="text-sm text-gray-700">{equipment}</span>
+            </label>
+          ))}
+        </div>
+        {selectedEquipment.length > 0 && (
+          <p className="text-sm text-gray-500 mt-2">
+            {selectedEquipment.length} {title.toLowerCase()} sélectionné{selectedEquipment.length > 1 ? 's' : ''}
+          </p>
+        )}
+      </div>
+    );
   };
 
   const nextStep = () => {
@@ -333,38 +346,7 @@ export const CreateListingForm: React.FC = () => {
       
       return (
         <div className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Marque *
-              </label>
-              <select
-                value={formData.specificDetails.brand || ''}
-                onChange={(e) => updateSpecificDetails('brand', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-              >
-                <option value="">Sélectionnez une marque</option>
-                {availableBrands.map((brand) => (
-                  <option key={brand} value={brand}>
-                    {brand}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-2">
-                Modèle *
-              </label>
-              <input
-                type="text"
-                value={formData.specificDetails.model || ''}
-                onChange={(e) => updateSpecificDetails('model', e.target.value)}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-                placeholder="Ex: 320d"
-              />
-            </div>
-          </div>
+          {renderCommonVehicleFields('car')}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -395,53 +377,246 @@ export const CreateListingForm: React.FC = () => {
                 min="0"
               />
             </div>
-          </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Carburant *
-            </label>
-            <select
-              value={formData.specificDetails.fuelType || ''}
-              onChange={(e) => updateSpecificDetails('fuelType', e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-            >
-              <option value="">Sélectionnez un carburant</option>
-              {fuelTypes.map((fuel) => (
-                <option key={fuel.value} value={fuel.value}>
-                  {fuel.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Équipements sous forme de cases à cocher */}
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-4">
-              Équipements (optionnel)
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {VEHICLE_EQUIPMENT.car.map((equipment) => (
-                <label
-                  key={equipment}
-                  className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedEquipment.includes(equipment)}
-                    onChange={() => toggleEquipment(equipment)}
-                    className="h-4 w-4 text-primary-bolt-500 focus:ring-primary-bolt-500 border-gray-300 rounded"
-                  />
-                  <span className="text-sm text-gray-700">{equipment}</span>
-                </label>
-              ))}
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Type de véhicule
+              </label>
+              <select
+                value={formData.specificDetails.vehicleType || ''}
+                onChange={(e) => updateSpecificDetails('vehicleType', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez un type</option>
+                {vehicleTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
             </div>
-            {selectedEquipment.length > 0 && (
-              <p className="text-sm text-gray-500 mt-2">
-                {selectedEquipment.length} équipement{selectedEquipment.length > 1 ? 's' : ''} sélectionné{selectedEquipment.length > 1 ? 's' : ''}
-              </p>
-            )}
           </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Boîte de vitesses
+              </label>
+              <select
+                value={formData.specificDetails.transmission || ''}
+                onChange={(e) => updateSpecificDetails('transmission', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez une transmission</option>
+                {transmissionTypes.map((trans) => (
+                  <option key={trans.value} value={trans.value}>
+                    {trans.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Carburant *
+              </label>
+              <select
+                value={formData.specificDetails.fuelType || ''}
+                onChange={(e) => updateSpecificDetails('fuelType', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez un carburant</option>
+                {fuelTypes.map((fuel) => (
+                  <option key={fuel.value} value={fuel.value}>
+                    {fuel.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Couleur
+              </label>
+              <select
+                value={formData.specificDetails.color || ''}
+                onChange={(e) => updateSpecificDetails('color', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez une couleur</option>
+                {colors.map((color) => (
+                  <option key={color} value={color}>
+                    {color}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Puissance (CV)
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.power || ''}
+                onChange={(e) => updateSpecificDetails('power', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="150"
+                min="0"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Nombre de portes
+              </label>
+              <select
+                value={formData.specificDetails.doors || ''}
+                onChange={(e) => updateSpecificDetails('doors', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez</option>
+                {doorCounts.map((door) => (
+                  <option key={door.value} value={door.value}>
+                    {door.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Sellerie
+              </label>
+              <select
+                value={formData.specificDetails.upholstery || ''}
+                onChange={(e) => updateSpecificDetails('upholstery', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez une sellerie</option>
+                {upholsteryTypes.map((upholstery) => (
+                  <option key={upholstery.value} value={upholstery.value}>
+                    {upholstery.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Classe d'émissions
+              </label>
+              <select
+                value={formData.specificDetails.emissionClass || ''}
+                onChange={(e) => updateSpecificDetails('emissionClass', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez une classe</option>
+                {emissionClasses.map((emission) => (
+                  <option key={emission.value} value={emission.value}>
+                    {emission.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {renderEquipmentCheckboxes(VEHICLE_EQUIPMENT.car)}
+        </div>
+      );
+    }
+
+    // Champs spécifiques pour les utilitaires
+    if (subcategory.id === 'utility') {
+      return (
+        <div className="space-y-6">
+          {renderCommonVehicleFields('utility')}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Année *
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.year || ''}
+                onChange={(e) => updateSpecificDetails('year', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="2020"
+                min="1990"
+                max={new Date().getFullYear() + 1}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Type d'utilitaire
+              </label>
+              <select
+                value={formData.specificDetails.utilityType || ''}
+                onChange={(e) => updateSpecificDetails('utilityType', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez un type</option>
+                {utilityTypes.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Kilométrage
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.mileage || ''}
+                onChange={(e) => updateSpecificDetails('mileage', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="50000"
+                min="0"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                PTAC (kg)
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.gvw || ''}
+                onChange={(e) => updateSpecificDetails('gvw', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="3500"
+                min="0"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Volume utile (m³)
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.volume || ''}
+                onChange={(e) => updateSpecificDetails('volume', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="10"
+                min="0"
+                step="0.1"
+              />
+            </div>
+          </div>
+
+          {renderEquipmentCheckboxes(VEHICLE_EQUIPMENT.utility)}
         </div>
       );
     }
