@@ -420,6 +420,9 @@ export const CreateListingForm: React.FC = () => {
   const renderSpecificDetailsFields = () => {
     const subcategory = getSelectedSubcategory();
     if (!subcategory) return null;
+    
+    // Obtenir les marques disponibles pour cette sous-catégorie
+    const availableBrands = getBrandsBySubcategory(subcategory.id);
 
     // Champs spécifiques pour les voitures
     if (subcategory.id === 'car') {
@@ -438,7 +441,7 @@ export const CreateListingForm: React.FC = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
               >
                 <option value="">Sélectionnez une marque</option>
-                {brands.map((brand) => (
+                {availableBrands.map((brand) => (
                   <option key={brand} value={brand}>
                     {brand}
                   </option>
@@ -703,7 +706,7 @@ export const CreateListingForm: React.FC = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
               >
                 <option value="">Sélectionnez une marque</option>
-                {brands.map((brand) => (
+                {availableBrands.map((brand) => (
                   <option key={brand} value={brand}>
                     {brand}
                   </option>
