@@ -522,15 +522,18 @@ export const CreateListingForm: React.FC = () => {
 
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Détails spécifiques
+              Informations complémentaires (optionnel)
             </label>
             <textarea
               value={formData.specificDetails.details || ''}
               onChange={(e) => updateSpecificDetails('details', e.target.value)}
               rows={4}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-              placeholder={`Détails spécifiques pour ${subcategory.name.toLowerCase()}...`}
+              placeholder={`Informations complémentaires pour ${subcategory.name.toLowerCase()}...`}
             />
+            <p className="text-sm text-gray-500 mt-2">
+              Ces informations seront ajoutées à votre description principale.
+            </p>
           </div>
 
           {/* Équipements si disponibles */}
@@ -561,34 +564,8 @@ export const CreateListingForm: React.FC = () => {
       );
     }
 
-    // Champ générique pour les services et autres
-    const placeholderText = {
-      // Services
-      'repair': 'Types de réparations, spécialités, zone d\'intervention, etc.',
-      'towing': 'Zone de remorquage, types de véhicules, tarifs, etc.',
-      'maintenance': 'Types d\'entretien, marques spécialisées, services inclus, etc.',
-      'other': 'Description du service proposé, zone d\'intervention, etc.',
-    };
-
-    return (
-      <div className="space-y-4">
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Détails spécifiques pour {subcategory.name}
-          </label>
-          <textarea
-            value={formData.specificDetails.details || ''}
-            onChange={(e) => updateSpecificDetails('details', e.target.value)}
-            rows={6}
-            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-            placeholder={placeholderText[subcategory.id as keyof typeof placeholderText] || 'Détails spécifiques...'}
-          />
-          <p className="text-sm text-gray-500 mt-2">
-            Renseignez les informations techniques et caractéristiques importantes pour votre {subcategory.name.toLowerCase()}.
-          </p>
-        </div>
-      </div>
-    );
+    // Pour les services et pièces détachées, pas de champs spécifiques
+    return null;
   };
 
   const renderRecapStep = () => {
@@ -711,7 +688,7 @@ export const CreateListingForm: React.FC = () => {
                 )}
                 {formData.specificDetails.details && (
                   <div className="mb-4">
-                    <span className="text-sm text-gray-600 block mb-2">Détails:</span>
+                    <span className="text-sm text-gray-600 block mb-2">Informations complémentaires:</span>
                     <p className="text-gray-700">{formData.specificDetails.details}</p>
                   </div>
                 )}
@@ -949,10 +926,10 @@ export const CreateListingForm: React.FC = () => {
           <div className="space-y-6">
             <div className="text-center mb-8">
               <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                Détails spécifiques
+                Informations du véhicule
               </h2>
               <p className="text-gray-600">
-                Renseignez les caractéristiques importantes de votre {getSelectedSubcategory()?.name.toLowerCase()}
+                Renseignez les informations de votre {getSelectedSubcategory()?.name.toLowerCase()}
               </p>
             </div>
 
