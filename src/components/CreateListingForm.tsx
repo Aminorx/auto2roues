@@ -520,22 +520,6 @@ export const CreateListingForm: React.FC = () => {
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Informations complémentaires (optionnel)
-            </label>
-            <textarea
-              value={formData.specificDetails.details || ''}
-              onChange={(e) => updateSpecificDetails('details', e.target.value)}
-              rows={4}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-              placeholder={`Informations complémentaires pour ${subcategory.name.toLowerCase()}...`}
-            />
-            <p className="text-sm text-gray-500 mt-2">
-              Ces informations seront ajoutées à votre description principale.
-            </p>
-          </div>
-
           {/* Équipements si disponibles */}
           {equipmentList.length > 0 && (
             <div>
@@ -684,12 +668,6 @@ export const CreateListingForm: React.FC = () => {
                   <div className="mb-4">
                     <span className="text-sm text-gray-600">Année:</span>
                     <p className="font-medium">{formData.specificDetails.year}</p>
-                  </div>
-                )}
-                {formData.specificDetails.details && (
-                  <div className="mb-4">
-                    <span className="text-sm text-gray-600 block mb-2">Informations complémentaires:</span>
-                    <p className="text-gray-700">{formData.specificDetails.details}</p>
                   </div>
                 )}
                 {formData.specificDetails.equipment && formData.specificDetails.equipment.length > 0 && (
