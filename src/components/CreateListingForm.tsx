@@ -133,8 +133,67 @@ const VEHICLE_EQUIPMENT = {
     'Airbags',
     'Feux LED / Xénon',
     'Attelage'
+  ],
+  caravan: [
+    'Cuisine équipée',
+    'Douche / WC',
+    'Réfrigérateur',
+    'Chauffage',
+    'Panneaux solaires',
+    'Store extérieur',
+    'Réserve d\'eau',
+    'Auvent',
+    'TV',
+    'Antenne satellite',
+    'Éclairage LED',
+    'Prises 12V/220V'
   ]
 };
+
+// Marques de caravanes
+const CARAVAN_BRANDS = [
+  'Hymer',
+  'Hobby',
+  'Dethleffs',
+  'Fendt',
+  'Knaus',
+  'Bürstner',
+  'Tabbert',
+  'Weinsberg',
+  'LMC',
+  'Eura Mobil',
+  'Caravelair',
+  'Sterckeman',
+  'La Mancelle',
+  'Silver',
+  'Notin',
+  'Rapido',
+  'Bailey',
+  'Swift',
+  'Lunar',
+  'Elddis',
+  'Coachman',
+  'Kip',
+  'Biod',
+  'Polar',
+  'Cabby',
+  'Adria',
+  'Eriba',
+  'T@B',
+  'Camp-let',
+  'Trigano',
+  'CI',
+  'Burstner Averso'
+];
+
+// Types de caravanes
+const CARAVAN_TYPES = [
+  'Caravane rigide',
+  'Caravane pliante',
+  'Caravane surbaissée',
+  'Caravane avec double essieu',
+  'Autre'
+];
 
 // Nouvelles constantes pour les détails spécifiques des voitures
 const VEHICLE_TYPES = [
@@ -236,6 +295,15 @@ export const CreateListingForm: React.FC = () => {
     updateSpecificDetails('equipment', updatedEquipment);
   };
 
+  const toggleAmenity = (amenity: string) => {
+    const currentAmenities = formData.specificDetails.amenities || [];
+    const updatedAmenities = currentAmenities.includes(amenity)
+      ? currentAmenities.filter((item: string) => item !== amenity)
+      : [...currentAmenities, amenity];
+    
+    updateSpecificDetails('amenities', updatedAmenities);
+  };
+
   const nextStep = () => {
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);
@@ -264,6 +332,17 @@ export const CreateListingForm: React.FC = () => {
                  formData.specificDetails.year && 
                  formData.specificDetails.mileage && 
                  formData.specificDetails.fuelType;
+        }
+        // Validation spécifique pour les caravanes
+        if (formData.subcategory === 'caravan') {
+          return formData.specificDetails.model && 
+                 formData.specificDetails.year && 
+                 formData.specificDetails.length && 
+                 formData.specificDetails.width && 
+                 formData.specificDetails.height && 
+                 formData.specificDetails.sleepingCapacity && 
+                 formData.specificDetails.ptac && 
+                 formData.specificDetails.caravanType;
         }
         // Validation spécifique pour les utilitaires
         if (formData.subcategory === 'utility') {
@@ -817,6 +896,182 @@ export const CreateListingForm: React.FC = () => {
       );
     }
 
+    // Champs spécifiques pour les caravanes
+    if (subcategory.id === 'caravan') {
+      const selectedAmenities = formData.specificDetails.amenities || [];
+      
+      return (
+        <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Marque (optionnel)
+              </label>
+              <select
+                value={formData.specificDetails.brand || ''}
+                onChange={(e) => updateSpecificDetails('brand', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez une marque</option>
+                {CARAVAN_BRANDS.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Modèle ou Référence *
+              </label>
+              <input
+                type="text"
+                value={formData.specificDetails.model || ''}
+                onChange={(e) => updateSpecificDetails('model', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="Ex: Prestige 560"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Année de mise en circulation *
+            </label>
+            <input
+              type="number"
+              value={formData.specificDetails.year || ''}
+              onChange={(e) => updateSpecificDetails('year', parseInt(e.target.value) || '')}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              placeholder="2020"
+              min="1990"
+              max={new Date().getFullYear() + 1}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-4">
+              Dimensions *
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Longueur (m)</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={formData.specificDetails.length || ''}
+                  onChange={(e) => updateSpecificDetails('length', parseFloat(e.target.value) || '')}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                  placeholder="6.5"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Largeur (m)</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={formData.specificDetails.width || ''}
+                  onChange={(e) => updateSpecificDetails('width', parseFloat(e.target.value) || '')}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                  placeholder="2.3"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">Hauteur (m)</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  value={formData.specificDetails.height || ''}
+                  onChange={(e) => updateSpecificDetails('height', parseFloat(e.target.value) || '')}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                  placeholder="2.6"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Nombre de couchages *
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.sleepingCapacity || ''}
+                onChange={(e) => updateSpecificDetails('sleepingCapacity', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="4"
+                min="1"
+                max="12"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                PTAC (kg) *
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.ptac || ''}
+                onChange={(e) => updateSpecificDetails('ptac', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="1500"
+                min="500"
+                max="5000"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Type de caravane *
+            </label>
+            <select
+              value={formData.specificDetails.caravanType || ''}
+              onChange={(e) => updateSpecificDetails('caravanType', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+            >
+              <option value="">Sélectionnez un type</option>
+              {CARAVAN_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Aménagements sous forme de cases à cocher */}
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-4">
+              Options / Aménagements (optionnel)
+            </label>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+              {VEHICLE_EQUIPMENT.caravan.map((amenity) => (
+                <label
+                  key={amenity}
+                  className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
+                >
+                  <input
+                    type="checkbox"
+                    checked={selectedAmenities.includes(amenity)}
+                    onChange={() => toggleAmenity(amenity)}
+                    className="h-4 w-4 text-primary-bolt-500 focus:ring-primary-bolt-500 border-gray-300 rounded"
+                  />
+                  <span className="text-sm text-gray-700">{amenity}</span>
+                </label>
+              ))}
+            </div>
+            {selectedAmenities.length > 0 && (
+              <p className="text-sm text-gray-500 mt-2">
+                {selectedAmenities.length} aménagement{selectedAmenities.length > 1 ? 's' : ''} sélectionné{selectedAmenities.length > 1 ? 's' : ''}
+              </p>
+            )}
+          </div>
+        </div>
+      );
+    }
+
     // Équipements pour motos
     if (subcategory.id === 'motorcycle') {
       const selectedEquipment = formData.specificDetails.equipment || [];
@@ -1080,6 +1335,62 @@ export const CreateListingForm: React.FC = () => {
                           className="px-2 py-1 bg-primary-bolt-100 text-primary-bolt-500 text-xs rounded-full"
                         >
                           {equipment}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : formData.subcategory === 'caravan' ? (
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div>
+                    <span className="text-sm text-gray-600">Marque:</span>
+                    <p className="font-medium">{formData.specificDetails.brand || 'Non renseigné'}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Modèle:</span>
+                    <p className="font-medium">{formData.specificDetails.model || 'Non renseigné'}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Année:</span>
+                    <p className="font-medium">{formData.specificDetails.year || 'Non renseigné'}</p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Dimensions:</span>
+                    <p className="font-medium">
+                      {formData.specificDetails.length && formData.specificDetails.width && formData.specificDetails.height
+                        ? `${formData.specificDetails.length}m × ${formData.specificDetails.width}m × ${formData.specificDetails.height}m`
+                        : 'Non renseigné'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Couchages:</span>
+                    <p className="font-medium">
+                      {formData.specificDetails.sleepingCapacity ? `${formData.specificDetails.sleepingCapacity} personnes` : 'Non renseigné'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">PTAC:</span>
+                    <p className="font-medium">
+                      {formData.specificDetails.ptac ? `${formData.specificDetails.ptac} kg` : 'Non renseigné'}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-sm text-gray-600">Type:</span>
+                    <p className="font-medium">{formData.specificDetails.caravanType || 'Non renseigné'}</p>
+                  </div>
+                </div>
+                {formData.specificDetails.amenities && formData.specificDetails.amenities.length > 0 && (
+                  <div>
+                    <span className="text-sm text-gray-600 block mb-2">Aménagements:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {formData.specificDetails.amenities.map((amenity: string, index: number) => (
+                        <span
+                          key={index}
+                          className="px-2 py-1 bg-primary-bolt-100 text-primary-bolt-500 text-xs rounded-full"
+                        >
+                          {amenity}
                         </span>
                       ))}
                     </div>
