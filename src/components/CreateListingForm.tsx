@@ -349,6 +349,13 @@ export const CreateListingForm: React.FC = () => {
                  formData.specificDetails.mileage && 
                  formData.specificDetails.fuelType;
         }
+        // Validation pour les motos
+        if (formData.subcategory === 'motorcycle') {
+          return formData.specificDetails.brand && 
+                 formData.specificDetails.model && 
+                 formData.specificDetails.year && 
+                 formData.specificDetails.mileage;
+        }
         // Validation spécifique pour les caravanes
         if (formData.subcategory === 'caravan') {
           return formData.specificDetails.model && 
@@ -360,10 +367,9 @@ export const CreateListingForm: React.FC = () => {
                  formData.specificDetails.ptac && 
                  formData.specificDetails.caravanType;
         }
-        // Validation spécifique pour les utilitaires
+        // Validation pour les utilitaires
         if (formData.subcategory === 'utility') {
-          return formData.specificDetails.utilityType &&
-                 formData.specificDetails.brand && 
+          return formData.specificDetails.brand && 
                  formData.specificDetails.model && 
                  formData.specificDetails.year && 
                  formData.specificDetails.mileage && 
@@ -420,9 +426,6 @@ export const CreateListingForm: React.FC = () => {
   const renderSpecificDetailsFields = () => {
     const subcategory = getSelectedSubcategory();
     if (!subcategory) return null;
-    
-    // Obtenir les marques disponibles pour cette sous-catégorie
-    const availableBrands = getBrandsBySubcategory(subcategory.id);
 
     // Champs spécifiques pour les voitures
     if (subcategory.id === 'car') {
@@ -441,7 +444,7 @@ export const CreateListingForm: React.FC = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
               >
                 <option value="">Sélectionnez une marque</option>
-                {availableBrands.map((brand) => (
+                {brands.map((brand) => (
                   <option key={brand} value={brand}>
                     {brand}
                   </option>
@@ -706,7 +709,7 @@ export const CreateListingForm: React.FC = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
               >
                 <option value="">Sélectionnez une marque</option>
-                {availableBrands.map((brand) => (
+                {brands.map((brand) => (
                   <option key={brand} value={brand}>
                     {brand}
                   </option>
@@ -1094,19 +1097,86 @@ export const CreateListingForm: React.FC = () => {
     // Équipements pour motos
     if (subcategory.id === 'motorcycle') {
       const selectedEquipment = formData.specificDetails.equipment || [];
+      const availableBrands = getBrandsBySubcategory(subcategory.id);
       
       return (
         <div className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Marque *
+              </label>
+              <select
+                value={formData.specificDetails.brand || ''}
+                onChange={(e) => updateSpecificDetails('brand', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+              >
+                <option value="">Sélectionnez une marque</option>
+                {availableBrands.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Modèle *
+              </label>
+              <input
+                type="text"
+                value={formData.specificDetails.model || ''}
+                onChange={(e) => updateSpecificDetails('model', e.target.value)}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="Ex: MT-07"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Année *
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.year || ''}
+                onChange={(e) => updateSpecificDetails('year', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="2020"
+                min="1990"
+                max={new Date().getFullYear() + 1}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-semibold text-gray-700 mb-2">
+                Kilométrage *
+              </label>
+              <input
+                type="number"
+                value={formData.specificDetails.mileage || ''}
+                onChange={(e) => updateSpecificDetails('mileage', parseInt(e.target.value) || '')}
+                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+                placeholder="15000"
+                min="0"
+              />
+            </div>
+          </div>
+
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Détails de la moto
+              Cylindrée (cm³)
             </label>
-            <textarea
-              value={formData.specificDetails.details || ''}
-              onChange={(e) => updateSpecificDetails('details', e.target.value)}
-              rows={4}
+            <input
+              type="number"
+              value={formData.specificDetails.displacement || ''}
+              onChange={(e) => updateSpecificDetails('displacement', parseInt(e.target.value) || '')}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-              placeholder="Marque, modèle, année, cylindrée, kilométrage, etc."
+              placeholder="689"
+              min="50"
+              max="2000"
             />
           </div>
 
@@ -1135,51 +1205,10 @@ export const CreateListingForm: React.FC = () => {
       );
     }
 
-    // Équipements pour utilitaires
-    if (subcategory.id === 'utility') {
-      const selectedEquipment = formData.specificDetails.equipment || [];
-      
-      return (
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Détails de l'utilitaire
-            </label>
-            <textarea
-              value={formData.specificDetails.details || ''}
-              onChange={(e) => updateSpecificDetails('details', e.target.value)}
-              rows={4}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
-              placeholder="Marque, modèle, année, kilométrage, type d'utilitaire, etc."
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-4">
-              Équipements (optionnel)
-            </label>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-              {VEHICLE_EQUIPMENT.utility.map((equipment) => (
-                <label
-                  key={equipment}
-                  className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors"
-                >
-                  <input
-                    type="checkbox"
-                    checked={selectedEquipment.includes(equipment)}
-                    onChange={() => toggleEquipment(equipment)}
-                    className="h-4 w-4 text-primary-bolt-500 focus:ring-primary-bolt-500 border-gray-300 rounded"
-                  />
-                  <span className="text-sm text-gray-700">{equipment}</span>
-                </label>
-              ))}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
     // Champ générique pour les autres sous-catégories
+    const availableBrands = getBrandsBySubcategory(subcategory.id);
+    const showBrandField = availableBrands.length > 0;
+    
     const placeholderText = {
       // Voitures - Utilitaires
       'caravan': 'Marque, modèle, année, nombre de places, équipements, etc.',
@@ -1204,6 +1233,27 @@ export const CreateListingForm: React.FC = () => {
 
     return (
       <div className="space-y-4">
+        {/* Champ marque si disponible pour cette sous-catégorie */}
+        {showBrandField && (
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Marque
+            </label>
+            <select
+              value={formData.specificDetails.brand || ''}
+              onChange={(e) => updateSpecificDetails('brand', e.target.value)}
+              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-primary-bolt-500 focus:border-primary-bolt-500 transition-all"
+            >
+              <option value="">Sélectionnez une marque</option>
+              {availableBrands.map((brand) => (
+                <option key={brand} value={brand}>
+                  {brand}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+        
         <div>
           <label className="block text-sm font-semibold text-gray-700 mb-2">
             Détails spécifiques pour {subcategory.name}
