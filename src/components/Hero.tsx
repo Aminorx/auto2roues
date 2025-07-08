@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, MapPin, Filter, Car, Bike, Truck, Wrench, Star, Crown, Eye, Heart, ChevronRight, Smartphone, Store, Users, TrendingUp, Plus, MoreHorizontal, ChevronLeft } from 'lucide-react';
 import { useApp } from '../contexts/AppContext';
-import { categories, mockVehicles } from '../utils/mockData';
+import { mockVehicles } from '../utils/mockData';
 import { CategorySection } from './CategorySection';
 
 interface HeroProps {
@@ -11,7 +11,6 @@ interface HeroProps {
 export const Hero: React.FC<HeroProps> = ({ setCurrentView }) => {
   const { setSearchFilters, currentUser, setSelectedVehicle } = useApp();
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('');
   const [location, setLocation] = useState('');
   const [currentAdIndex, setCurrentAdIndex] = useState(0);
 
@@ -27,6 +26,10 @@ export const Hero: React.FC<HeroProps> = ({ setCurrentView }) => {
 
   const handleVehicleClick = (vehicle: any) => {
     setSelectedVehicle(vehicle);
+  };
+
+  const handleCreateListing = () => {
+    setCurrentView('create-listing');
   };
 
   const formatPrice = (price: number) => {
@@ -523,66 +526,68 @@ export const Hero: React.FC<HeroProps> = ({ setCurrentView }) => {
         </div>
       </section>
 
-{/* Mobile App Section */}
-<section className="py-16 bg-white">
-  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-      <div>
-        <div className="inline-flex items-center space-x-2 bg-green-100 rounded-full px-4 py-2 mb-6">
-          <Smartphone className="h-5 w-5 text-green-700" />
-          <span className="font-semibold text-green-700">Disponible maintenant</span>
+      {/* Mobile App Section */}
+      <section className="py-16 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+              <div className="inline-flex items-center space-x-2 bg-green-100 rounded-full px-4 py-2 mb-6">
+                <Smartphone className="h-5 w-5 text-green-700" />
+                <span className="font-semibold text-green-700">Disponible maintenant</span>
+              </div>
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+                L'application mobile Auto2Roues
+              </h2>
+              <p className="text-xl text-gray-600 mb-8">
+                Achetez et vendez vos véhicules directement depuis votre smartphone. 
+                Téléchargez l'application dès maintenant !
+              </p>
+
+              {/* App Store Buttons */}
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button className="bg-black text-white px-6 py-3 rounded-lg flex items-center space-x-3 hover:bg-gray-800 transition-colors">
+                  <div className="text-2xl">📱</div>
+                  <div className="text-left">
+                    <div className="text-xs">Télécharger sur</div>
+                    <div className="text-lg font-semibold">App Store</div>
+                  </div>
+                </button>
+                
+                <button className="bg-black text-white px-6 py-3 rounded-lg flex items-center space-x-3 hover:bg-gray-800 transition-colors">
+                  <div className="text-2xl">🤖</div>
+                  <div className="text-left">
+                    <div className="text-xs">Disponible sur</div>
+                    <div className="text-lg font-semibold">Google Play</div>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Phone Mockup */}
+            <div className="text-center">
+              <div className="relative mx-auto w-64 h-96 bg-gray-900 rounded-3xl p-2 shadow-2xl">
+                <div className="w-full h-full bg-white rounded-2xl overflow-hidden">
+                  <div className="bg-primary-bolt-500 p-4 text-white text-center">
+                    <h3 className="font-bold">Auto2Roues</h3>
+                  </div>
+                  <div className="p-4 space-y-3">
+                    <div className="bg-gray-100 h-20 rounded-lg flex items-center justify-center">
+                      <Car className="h-8 w-8 text-gray-400" />
+                    </div>
+                    <div className="space-y-2">
+                      <div className="bg-gray-100 h-3 rounded w-3/4"></div>
+                      <div className="bg-gray-100 h-3 rounded w-1/2"></div>
+                    </div>
+                    <div className="bg-primary-bolt-100 h-8 rounded flex items-center justify-center">
+                      <span className="text-primary-bolt-500 text-sm font-medium">25,000 €</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
-        <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
-          L'application mobile Auto2Roues
-        </h2>
-        <p className="text-xl text-gray-600 mb-8">
-          Achetez et vendez vos véhicules directement depuis votre smartphone. 
-          Téléchargez l'application dès maintenant !
-        </p>
-
-        {/* Liens vers stores avec images SVG */}
-        <div className="flex flex-col sm:flex-row gap-4">
-          <a
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block"
-          >
-            <img
-              src="https://emojipedia.org/_next/static/media/logo-google-playstore.ea498ce8.svg"
-              alt="Télécharger sur Google Play"
-              className="h-14 w-auto"
-            />
-          </a>
-
-          <a
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block"
-          >
-            <img
-              src="https://emojipedia.org/_next/static/media/logo-apple-appstore.ba19db80.svg"
-              alt="Télécharger sur l'App Store"
-              className="h-14 w-auto"
-            />
-          </a>
-        </div>
-      </div>
-
-      {/* Real Phone Image */}
-      <div className="text-center">
-        <img
-          src="/src/assets/app-mobile-screen.webp"
-          alt="Application mobile Auto2Roues"
-          className="mx-auto max-w-full h-auto shadow-2xl rounded-3xl"
-          style={{ maxHeight: '600px' }}
-        />
-      </div>
-    </div>
-  </div>
-</section>
-
+      </section>
 
       {/* Footer */}
       <footer className="bg-gray-900 text-white py-16">
@@ -593,15 +598,11 @@ export const Hero: React.FC<HeroProps> = ({ setCurrentView }) => {
               <div className="flex items-center space-x-3 mb-6">
                 <div>
                   <h3 className="text-xl font-bold">Auto2Roues</h3>
-                  
                 </div>
               </div>
               <p className="text-gray-400 mb-6">
                 La marketplace de référence pour l'achat et la vente de véhicules d'occasion et pièces détachées.
               </p>
-              <div className="flex space-x-4">
-                
-              </div>
             </div>
 
             {/* Quick Links */}

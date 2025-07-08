@@ -8,10 +8,12 @@ import { AuthModal } from './components/AuthModal';
 import { Dashboard } from './components/Dashboard';
 import { CreateListingForm } from './components/CreateListingForm';
 import { Conseils } from './components/Conseils';
+import CreateListingFormModal from './components/CreateListingForm';
 
 function AppContent() {
   const [currentView, setCurrentView] = useState('home');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [showCreateListingModal, setShowCreateListingModal] = useState(false);
   const { selectedVehicle, setSelectedVehicle } = useApp();
 
   const handleBack = useCallback(() => {
@@ -25,7 +27,9 @@ function AppContent() {
       case 'dashboard':
         return <Dashboard />;
       case 'create-listing':
-        return <CreateListingForm />;
+        setShowCreateListingModal(true);
+        setCurrentView('home');
+        return <Hero setCurrentView={setCurrentView} />;
       case 'conseils':
         return <Conseils />;
       case 'messages':
@@ -76,6 +80,14 @@ function AppContent() {
       )}
       
       <AuthModal />
+      <CreateListingFormModal 
+        isOpen={showCreateListingModal}
+        onClose={() => setShowCreateListingModal(false)}
+        onSubmit={(listing) => {
+          console.log('New listing:', listing);
+          setShowCreateListingModal(false);
+        }}
+      />
     </div>
   );
 }
