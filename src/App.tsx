@@ -8,7 +8,7 @@ import { AuthModal } from './components/AuthModal';
 import { Dashboard } from './components/Dashboard';
 import { CreateListingForm } from './components/CreateListingForm';
 import { Conseils } from './components/Conseils';
-import CreateListingFormModal from './components/CreateListingForm';
+import { CreateListingForm as CreateListingFormModal } from './components/CreateListingForm';
 
 function AppContent() {
   const [currentView, setCurrentView] = useState('home');
